@@ -5,7 +5,7 @@
             "previewLimit": 50,
             "driver": "SQLite",
             "name": "db",
-            "database": "${workspaceFolder:evangelical-tracker}/src/db/tracker.db"
+            "database": "${workspaceFolder:evangelical-tracker}/src/db/db.sqlite"
         }
     ]
 }

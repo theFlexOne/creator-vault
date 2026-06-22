@@ -2,13 +2,13 @@ import Database from 'better-sqlite3'
 import path from 'path'
 import { existsSync, mkdirSync } from 'fs'
 
-// Retrieve DB path from environment or default to src/db/tracker.db
+// Retrieve DB path from environment or default to src/db/db.sqlite
 const dbDir = path.resolve(process.cwd(), 'src/db')
 if (!existsSync(dbDir)) {
   mkdirSync(dbDir, { recursive: true })
 }
 
-const defaultDbPath = path.join(dbDir, 'tracker.db')
+const defaultDbPath = path.join(dbDir, 'db.sqlite')
 const dbPath = process.env.DATABASE_PATH || defaultDbPath
 
 // Initialize and export the database connection

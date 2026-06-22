@@ -28,6 +28,7 @@ const fetchChannels: FetchChannelsCommand = {
                 default: false,
             });
     },
+
     handler: async (argv) => {
         const { inputs, save } = argv;
         const urls = await resolveIdentifiers(inputs);
@@ -49,6 +50,7 @@ const fetchChannels: FetchChannelsCommand = {
                 if (save) {
                     upsertChannelData(channelInfo);
                 } else {
+                    logger.info(JSON.stringify(channelInfo, null, 2));
                     logger.info('Channel not saved (use --save to store in DB).');
                 }
 

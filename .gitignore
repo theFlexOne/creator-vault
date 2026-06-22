@@ -126,3 +126,5 @@ node_modules
 /data/*.db-*
 
 .notes/
+
+db.sqlite

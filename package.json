@@ -20,6 +20,7 @@
   "scripts": {
     "build": "tsup-node",
     "build:watch": "tsup-node --watch",
+    "link": "npm link",
     "clean": "rimraf dist",
     "commit": "cz",
     "commitlint": "commitlint --edit",

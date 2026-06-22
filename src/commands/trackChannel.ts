@@ -1,8 +1,8 @@
 import { CommandModule } from 'yargs';
 import { logger } from '../logger';
 import getChannelInfo from '../lib/yt-dlp/getChannelInfo';
-import getChannelTranscripts from '../lib/yt-dlp/getChannelTranscripts';
-import { upsertChannelData, upsertVideoData, upsertTranscriptData, getVideosMissingTranscripts } from '../services/db.service';
+// import getChannelTranscripts from '../lib/yt-dlp/getChannelTranscripts';
+import { upsertChannelData, upsertVideoData } from '../services/db.service';
 import { resolveIdentifiers } from '../services/command.service';
 
 const trackChannel: CommandModule<{}, { urls: string[]; limit: number }> = {
@@ -42,8 +42,8 @@ const trackChannel: CommandModule<{}, { urls: string[]; limit: number }> = {
                 const { videos: allVideos } = metadata;
 
                 // Apply limit
-                const videos = allVideos.slice(0, limit);
-                logger.info(`Processing ${videos.length} out of ${allVideos.length} found videos.`);
+                const videos = allVideos?.slice(0, limit) || [];
+                logger.info(`Processing ${videos.length} out of ${allVideos?.length || 0} found videos.`);
 
                 // 1. Upsert channel
                 const channelInternalId = upsertChannelData(metadata);
@@ -51,18 +51,18 @@ const trackChannel: CommandModule<{}, { urls: string[]; limit: number }> = {
                 // 2. Upsert videos
                 upsertVideoData(channelInternalId, videos);
 
-                // 3. Fetch and store transcripts for videos that don't have them
-                const missingTranscripts = getVideosMissingTranscripts(channelInternalId, limit);
+                // // 3. Fetch and store transcripts for videos that don't have them
+                // const missingTranscripts = getVideosMissingTranscripts(channelInternalId, limit);
 
-                if (missingTranscripts.length > 0) {
-                    logger.info(`Fetching transcripts for ${missingTranscripts.length} videos...`);
-                    const videoIds = missingTranscripts.map(v => v.id);
-                    const transcripts = await getChannelTranscripts(videoIds);
+                // if (missingTranscripts.length > 0) {
+                //     logger.info(`Fetching transcripts for ${missingTranscripts.length} videos...`);
+                //     const videoIds = missingTranscripts.map(v => v.id);
+                //     const transcripts = await getChannelTranscripts(videoIds);
 
-                    upsertTranscriptData(transcripts);
-                } else {
-                    logger.info('All processed videos already have transcripts.');
-                }
+                //     upsertTranscriptData(transcripts);
+                // } else {
+                //     logger.info('All processed videos already have transcripts.');
+                // }
 
                 logger.info(`Channel tracking complete for ${url}.`);
             } catch (error) {
