@@ -27,11 +27,11 @@ The primary command for tracking channels from start to finish.
 ### 2. Modular Fetching
 These commands allow you to perform specific steps of the pipeline. They do **not** save to the database unless the `--save` (or `-s`) flag is provided.
 
-**`et fetch-channel <urls..> [--save] [--bulk] [--json]`**
+**`et fetch-channels <urls..> [--save] [--bulk] [--json]`**
 - Fetches name, handle, and YouTube ID.
 - **Input Formats**: Accepts full URLs, Channel IDs, or handles.
 - **Piping**: Use `--json` (or `-j`) to output raw data to stdout for tools like `jq`.
-- **Example**: `et fetch-channel @handle1 --json | jq '.'`
+- **Example**: `et fetch-channels @handle1 --json | jq '.'`
 
 **`et fetch-videos <channels..> [--limit <number>] [--save] [--bulk]`**
 - Fetches video metadata (title, duration, view count) for channels already in the DB.

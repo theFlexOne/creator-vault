@@ -2,10 +2,16 @@
     "sqltools.useNodeRuntime": true,
     "sqltools.connections": [
         {
-            "previewLimit": 50,
+            "previewLimit": 200,
             "driver": "SQLite",
             "name": "db",
             "database": "${workspaceFolder:evangelical-tracker}/src/db/db.sqlite"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:evangelical-tracker}/src/db/db.sqlite.bak",
+            "name": "db bak"
         }
     ]
 }

@@ -10,7 +10,7 @@ type FetchChannelsCommand = CommandModule<{}, {
 }>;
 
 const fetchChannels: FetchChannelsCommand = {
-    command: 'fetch-channel <inputs..>',
+    command: 'fetch-channels <inputs..>',
     describe: 'Fetches channel info. Accepts space-separated URLs, handles, or IDs, or a single .txt/.json file path.',
 
     builder: (yargs) => {

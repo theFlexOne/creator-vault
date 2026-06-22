@@ -1,14 +1,4 @@
-DROP TABLE IF EXISTS transcripts;
-DROP TABLE IF EXISTS videos;
-DROP TABLE IF EXISTS channel_tags;
-DROP TABLE IF EXISTS creator_tags;
-DROP TABLE IF EXISTS creator_socials;
-DROP TABLE IF EXISTS creator_channels;
-DROP TABLE IF EXISTS channels;
-DROP TABLE IF EXISTS creators;
-DROP TABLE IF EXISTS social_platforms;
-DROP TABLE IF EXISTS tags;
--- "tags" are interal tags and not associated with the youtube video tags
+CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE tags (name TEXT PRIMARY KEY);
 CREATE TABLE social_platforms (name TEXT PRIMARY KEY);
 CREATE TABLE creators (
@@ -43,7 +33,6 @@ CREATE TABLE videos (
     transcript TEXT NOT NULL DEFAULT '[]',
     FOREIGN KEY (channel_id) REFERENCES channels (id) ON DELETE CASCADE
 );
--- don't auto-increment transcripts.video_id since it should match videos.id. Instead, set it explicitly when inserting/updating transcripts. 
 CREATE TABLE transcripts (
     video_id INTEGER PRIMARY KEY,
     text TEXT NOT NULL,

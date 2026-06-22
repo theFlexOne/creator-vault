@@ -54,7 +54,7 @@ const fetchVideos: YTFetchCommand = {
                 const channelUrl = getChannelUrl(channelIdentifier);
 
                 if (!channelInternalId || !channelUrl) {
-                    logger.error(`Channel "${channelIdentifier}" not found in the database. Please add it first using fetch-channel.`);
+                    logger.error(`Channel "${channelIdentifier}" not found in the database. Please add it first using fetch-channels.`);
                     continue;
                 }
 

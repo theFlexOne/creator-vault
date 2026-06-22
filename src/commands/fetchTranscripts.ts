@@ -52,7 +52,7 @@ const fetchTranscripts: YTFetchCommand = {
             try {
                 const channelInternalId = getChannelInternalId(channelIdentifier);
                 if (!channelInternalId) {
-                    logger.error(`Channel "${channelIdentifier}" not found in the database. Please add it first using fetch-channel.`);
+                    logger.error(`Channel "${channelIdentifier}" not found in the database. Please add it first using fetch-channels.`);
                     continue;
                 }
 
