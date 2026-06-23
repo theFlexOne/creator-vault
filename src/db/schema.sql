@@ -1,4 +1,15 @@
-CREATE TABLE sqlite_sequence(name,seq);
+DROP TABLE IF EXISTS channel_tags;
+DROP TABLE IF EXISTS channels;
+DROP TABLE IF EXISTS creator_channels;
+DROP TABLE IF EXISTS creator_socials;
+DROP TABLE IF EXISTS creator_tags;
+DROP TABLE IF EXISTS creators;
+DROP TABLE IF EXISTS social_platforms;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS transcripts;
+DROP TABLE IF EXISTS videos;
+
+
 CREATE TABLE tags (name TEXT PRIMARY KEY);
 CREATE TABLE social_platforms (name TEXT PRIMARY KEY);
 CREATE TABLE creators (

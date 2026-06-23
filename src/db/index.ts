@@ -9,68 +9,11 @@ if (!existsSync(dbDir)) {
 }
 
 const defaultDbPath = path.join(dbDir, 'db.sqlite')
-const dbPath = process.env.DATABASE_PATH || defaultDbPath
+const dbPath = defaultDbPath
 
-// Initialize and export the database connection
-export const db: Database.Database = new Database(dbPath)
+const db: Database.Database = new Database(dbPath)
 
-// Enable foreign key support
 db.pragma('foreign_keys = ON')
 
-export interface Tag {
-  name: string
-}
-
-export interface Creator {
-  id?: number
-  name: string
-  description?: string
-  occupation?: string
-  education?: string
-}
-
-export interface SocialPlatform {
-  name: string
-}
-
-export interface CreatorSocial {
-  creator_id: number
-  platform: string
-  url?: string
-  handle?: string
-}
-
-export interface Channel {
-  id?: number
-  youtube_channel_id?: string
-  name: string
-  handle: string
-  description?: string
-  followers?: number
-  tags?: string
-  url: string
-}
-
-export interface Video {
-  id: string
-  channel_id: number
-  title: string
-  url: string
-  description?: string
-  duration?: number
-  upload_date?: string
-  view_count?: number
-  categories?: string
-  tags?: string
-  transcript?: string
-}
-
-export interface Transcript {
-  video_id: string
-  content: string
-}
-
-export interface CreatorChannel {
-  creator_id: number
-  channel_id: number
-}
+export default db
+export { defaultDbPath, dbDir }
