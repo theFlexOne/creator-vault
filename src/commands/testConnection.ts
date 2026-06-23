@@ -1,6 +1,6 @@
 import { CommandModule } from 'yargs';
 import { logger } from '../logger';
-import { db } from '../db';
+import db from '../db';
 import youtubedl from 'youtube-dl-exec';
 
 const testConnection: CommandModule = {

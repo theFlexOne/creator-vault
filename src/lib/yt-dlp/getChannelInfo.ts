@@ -30,12 +30,3 @@ export default async function getChannelInfo(input: string): Promise<ChannelDTO 
         return;
     }
 }
-
-if (require.main === module) {
-    const testUrl = 'https://www.youtube.com/@LastWeekTonight';
-    getChannelInfo(testUrl).then(data => {
-        console.log('Fetched Channel Data:', data);
-    }).catch(error => {
-        console.error('Error fetching channel data:', error);
-    });
-}

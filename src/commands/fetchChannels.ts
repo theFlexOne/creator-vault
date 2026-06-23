@@ -1,6 +1,6 @@
 import { CommandModule } from 'yargs';
 import getChannelInfo from '../lib/yt-dlp/getChannelInfo';
-import { upsertChannelData } from '../services/db.service';
+import { upsertChannelInfo } from '../services/db.service';
 import { resolveIdentifiers } from '../services/command.service';
 import { logger } from '../logger';
 
@@ -48,7 +48,7 @@ const fetchChannels: FetchChannelsCommand = {
                 results.push(channelInfo);
 
                 if (save) {
-                    upsertChannelData(channelInfo);
+                    upsertChannelInfo(channelInfo);
                 } else {
                     logger.info(JSON.stringify(channelInfo, null, 2));
                     logger.info('Channel not saved (use --save to store in DB).');

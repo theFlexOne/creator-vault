@@ -1,4 +1,4 @@
-import { db } from './index'
+import db from './index'
 import { logger } from '../logger'
 import { readdirSync, readFileSync } from 'fs'
 import { resolve } from 'path'

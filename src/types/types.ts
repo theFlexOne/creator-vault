@@ -77,6 +77,6 @@ export type YTFetchCommand = CommandModule<
     inputs: string[]
     limit: number
     save: boolean
-    json: boolean
+    batch: number
   }
 >

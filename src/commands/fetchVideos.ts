@@ -1,8 +1,10 @@
 import { logger } from '../logger';
 import getChannelInfo from '../lib/yt-dlp/getChannelInfo';
-import { upsertVideoData, getChannelInternalId, getChannelUrl } from '../services/db.service';
+import getChannelVideoUrls from '../lib/yt-dlp/getChannelVideoUrls';
+import { upsertVideoInfo, getChannelInternalId } from '../services/db.service';
 import { resolveIdentifiers } from '../services/command.service';
 import { YTFetchCommand } from '../types/types';
+import getVideoInfo from '../lib/yt-dlp/getVideoInfo';
 
 const fetchVideos: YTFetchCommand = {
     command: 'fetch-videos <inputs..>',
@@ -19,7 +21,7 @@ const fetchVideos: YTFetchCommand = {
             .option('limit', {
                 describe: 'Limit the number of videos to process per channel',
                 type: 'number',
-                default: 50,
+                default: 100,
             })
             .option('save', {
                 alias: 's',
@@ -27,67 +29,78 @@ const fetchVideos: YTFetchCommand = {
                 type: 'boolean',
                 default: false,
             })
-            .option('json', {
-                alias: 'j',
-                describe: 'Output raw JSON to stdout',
-                type: 'boolean',
-                default: false,
+            .option('batch', {
+                describe: 'Batch size for processing videos',
+                type: 'number',
+                default: 20,
+            })
+            .check((args) => {
+                if (args.limit < 1 || args.batch < 1) {
+                    throw new Error('Both --limit and --batch must be greater than 0.');
+                }
+
+                return true;
             });
     },
     handler: async (argv) => {
-        const { inputs, limit, save, json } = argv;
-        const channels = await resolveIdentifiers(inputs);
+        const { inputs, limit, save, batch } = argv;
 
-        if (json) {
-            process.stderr.write(`Resolved ${channels.length} channels to process.\n`);
-        } else {
-            logger.info(`Resolved ${channels.length} channels to process.`);
-        }
+        const identifiers = await resolveIdentifiers(inputs);
 
-        const results = [];
-
-        for (const channelIdentifier of channels) {
-            if (!json) logger.info(`Fetching video metadata for channel: ${channelIdentifier} (Limit: ${limit})`);
-
-            try {
-                const channelInternalId = getChannelInternalId(channelIdentifier);
-                const channelUrl = getChannelUrl(channelIdentifier);
-
-                if (!channelInternalId || !channelUrl) {
-                    logger.error(`Channel "${channelIdentifier}" not found in the database. Please add it first using fetch-channels.`);
-                    continue;
-                }
-
-                const metadata = await getChannelInfo(channelUrl, { quiet: json }); 
-                if (!metadata) {
-                    logger.error(`Failed to fetch metadata for channel: ${channelIdentifier} from URL: ${channelUrl}.`);
-                    continue;
-                }
-
-                const videosToProcess = metadata.videos.slice(0, limit);
-
-                if (json) {
-                    results.push({ channel: channelIdentifier, videos: videosToProcess });
-                } else {
-                    logger.info(`Fetched ${videosToProcess.length} videos for ${metadata.title}.`);
-                }
-
-                if (save) {
-                    const insertedCount = upsertVideoData(channelInternalId, videosToProcess);
-                    if (!json) logger.info(`Successfully saved/updated ${insertedCount} videos.`);
-                } else if (!json) {
-                    logger.info('Video data not saved (use --save to store in DB).');
-                }
-
-            } catch (error) {
-                logger.error(`Error during fetchVideos for ${channelIdentifier}:`, error);
+        for (const identifier of identifiers) {
+            logger.info(`Processing channel: ${identifier}`);
+            const channelInfo = await getChannelInfo(identifier);
+            if (!channelInfo) {
+                logger.warn(`Failed to fetch channel info for: ${identifier}`);
+                continue;
             }
-        }
 
-        if (json) {
-            console.log(JSON.stringify(results.length === 1 ? results[0] : results, null, 2));
+            let channelId: number | undefined;
+            if (save) {
+                const youtubeChannelId = channelInfo.youtubeChannelId;
+                const channelHandle = channelInfo.handle;
+
+                if (!youtubeChannelId && !channelHandle) {
+                    logger.warn(`Channel has no youtubeChannelId or handle. Skipping save for: ${identifier}`);
+                    continue;
+                }
+
+                channelId = youtubeChannelId ? getChannelInternalId(youtubeChannelId) : undefined;
+                if (!channelId && channelHandle) {
+                    channelId = getChannelInternalId(channelHandle);
+                }
+
+                if (!channelId) {
+                    logger.warn(`Channel not found in DB: ${identifier}. Skipping.`);
+                    continue;
+                }
+            }
+
+            const videoUrls = await getChannelVideoUrls(identifier);
+            const totalToProcess = Math.min(limit, videoUrls.length);
+            if (totalToProcess === 0) {
+                logger.info(`No videos to process for channel: ${identifier}`);
+                continue;
+            }
+
+            let counter = 0;
+            while (counter < totalToProcess) {
+                const batchSize = Math.min(batch, totalToProcess - counter);
+                const limitedVideoUrls = videoUrls.slice(counter, counter + batchSize);
+
+                const videoInfoList = await getVideoInfo(limitedVideoUrls);
+
+                if (save && channelId) {
+                    const upsertedCount = upsertVideoInfo(channelId, videoInfoList);
+                    logger.info(`Upserted ${upsertedCount} videos for channel: ${identifier} (batch starting at ${counter})`);
+                }
+
+                counter += batchSize;
+            }
+
+            logger.info(`Finished processing ${counter} videos for channel: ${identifier}`);
         }
-    },
+    }
 };
 
 export default fetchVideos;

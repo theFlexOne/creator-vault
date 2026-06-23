@@ -2,7 +2,7 @@ import { CommandModule } from 'yargs';
 import { logger } from '../logger';
 import getChannelInfo from '../lib/yt-dlp/getChannelInfo';
 // import getChannelTranscripts from '../lib/yt-dlp/getChannelTranscripts';
-import { upsertChannelData, upsertVideoData } from '../services/db.service';
+import { upsertChannelInfo, upsertVideoInfo } from '../services/db.service';
 import { resolveIdentifiers } from '../services/command.service';
 
 const trackChannel: CommandModule<{}, { urls: string[]; limit: number }> = {
@@ -46,10 +46,10 @@ const trackChannel: CommandModule<{}, { urls: string[]; limit: number }> = {
                 logger.info(`Processing ${videos.length} out of ${allVideos?.length || 0} found videos.`);
 
                 // 1. Upsert channel
-                const channelInternalId = upsertChannelData(metadata);
+                const channelInternalId = upsertChannelInfo(metadata);
 
                 // 2. Upsert videos
-                upsertVideoData(channelInternalId, videos);
+                upsertVideoInfo(channelInternalId, videos);
 
                 // // 3. Fetch and store transcripts for videos that don't have them
                 // const missingTranscripts = getVideosMissingTranscripts(channelInternalId, limit);

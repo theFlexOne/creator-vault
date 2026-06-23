@@ -178,7 +178,7 @@ console.log(`Deleted ${info.changes} channel(s).`);
 Relational joins allow you to bridge tables. For instance, querying channels connected to a specific creator or vice-versa.
 
 ```typescript
-import { db } from './src/db';
+import db from './src/db';
 
 // Find all YouTube channels associated with a specific creator name
 const creatorName = 'Doreen Virtue';
@@ -203,7 +203,7 @@ Transactions are atomic, consistent, isolated, and durable (ACID). If any operat
 `better-sqlite3` handles transactions using `db.transaction(fn)`. It returns a wrapped function that executes your code inside a transaction context.
 
 ```typescript
-import { db } from './src/db';
+import db from './src/db';
 
 // 1. Define the transactional operation
 const createCreatorAndChannel = db.transaction((creatorData, channelData) => {

@@ -1,4 +1,4 @@
-import { db } from '../db';
+import db from '../db';
 // import { VideoTranscript } from '../lib/yt-dlp/getChannelTranscripts';
 import { logger } from '../logger';
 import { ChannelDTO, VideoDTO } from '../types/types';
@@ -47,7 +47,7 @@ const upsertVideo = db.prepare(`
 //         text = excluded.text
 // `);
 
-export function upsertChannelData(data: ChannelDTO): number {
+export function upsertChannelInfo(data: ChannelDTO): number {
     if (!data.name || !data.handle || !data.url) {
         throw new Error('Cannot upsert channel without name, handle, and url.');
     }
@@ -70,7 +70,7 @@ export function upsertChannelData(data: ChannelDTO): number {
     return channelResult.id;
 }
 
-export function upsertVideoData(channelId: number, videos: VideoDTO[]): number {
+export function upsertVideoInfo(channelId: number, videos: VideoDTO[]): number {
     if (!videos || videos.length === 0) {
         logger.info('No videos to upsert for channel ID: ' + channelId);
         return 0;

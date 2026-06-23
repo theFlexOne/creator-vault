@@ -46,7 +46,7 @@ jest.mock('../../logger', () => ({
     },
 }));
 
-import { upsertChannelData } from '../db.service';
+import { upsertChannelInfo } from '../db.service';
 
 type ChannelRow = {
     id: number;
@@ -73,7 +73,7 @@ describe('upsertChannelData', () => {
     });
 
     it('inserts a new channel and returns its id', () => {
-        const id = upsertChannelData({
+        const id = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
             handle: '@alpha',
@@ -100,7 +100,7 @@ describe('upsertChannelData', () => {
     });
 
     it('updates the existing channel on handle conflict without overwriting null fields', () => {
-        const insertedId = upsertChannelData({
+        const insertedId = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
             handle: '@alpha',
@@ -110,7 +110,7 @@ describe('upsertChannelData', () => {
             url: 'https://www.youtube.com/@alpha',
         });
 
-        const updatedId = upsertChannelData({
+        const updatedId = upsertChannelInfo({
             name: 'Alpha Updated',
             handle: '@alpha',
             url: 'https://www.youtube.com/@alpha/videos',
@@ -135,7 +135,7 @@ describe('upsertChannelData', () => {
 
     it('rejects channel payloads that miss required fields', () => {
         expect(() =>
-            upsertChannelData({
+            upsertChannelInfo({
                 handle: '@alpha',
                 url: 'https://www.youtube.com/@alpha',
             } as any),
