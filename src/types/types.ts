@@ -50,7 +50,7 @@ export type CreatorChannelDTO = {
 }
 
 export type VideoDTO = {
-  id?: string
+  id?: number
   channelId?: number
   title?: string
   url?: string
@@ -58,16 +58,14 @@ export type VideoDTO = {
   duration?: number
   uploadDate?: string
   viewCount?: number
-  categories?: string
-  tags?: string
+  categories?: string[]
+  tags?: string[]
   transcript?: string
-
-  // Compatibility aliases currently used by existing app code.
-  ytVideoId?: string
+  youtubeVideoId?: string
 }
 
 export type TranscriptDTO = {
-  videoId?: string
+  videoId?: number
   text?: string
 }
 
@@ -75,7 +73,7 @@ export type YTFetchCommand = CommandModule<
   {},
   {
     inputs: string[]
-    limit: number
+    limit: number | null
     save: boolean
     batch: number
   }

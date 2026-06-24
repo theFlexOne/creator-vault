@@ -3,13 +3,15 @@ import { PayloadWithEntries } from '../../types/youtube-dl';
 import { logger } from '../../logger';
 import { normalizeYoutubeUrl } from '../../services/command.service';
 
-export default async function getChannelVideoUrls(input: string): Promise<string[]> {
+export default async function getChannelVideoUrls(input: string, start: number | null = null, limit: number | null = null): Promise<string[]> {
     const url = `${normalizeYoutubeUrl(input)}/videos`;
     try {
         const output = await youtubedl(url, {
             flatPlaylist: true,
             skipDownload: true,
             dumpSingleJson: true,
+            playlistStart: start ?? undefined,
+            playlistEnd: limit ?? undefined,
         }) as PayloadWithEntries;
 
         if (!output.entries || output.entries.length === 0) {
@@ -17,7 +19,7 @@ export default async function getChannelVideoUrls(input: string): Promise<string
             return [];
         }
 
-        const videoUrls = output.entries.reduce<string[]>((urls, entry, i, entries) => {
+        const videoUrls = output.entries.reduce<string[]>((urls, entry, _, entries) => {
             if (entry._type === 'url' && entry.url) {
                 urls.push(entry.url);
             } else if (entry._type === 'playlist' && entry.entries) {
