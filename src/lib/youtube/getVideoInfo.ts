@@ -1,6 +1,6 @@
 import youtubedl, { Payload } from 'youtube-dl-exec';
-import { VideoDTO } from '../../types/types';
-import { logger } from '../../logger';
+import { VideoDTO } from '../../domain/video/video.types';
+import { logger } from '../../shared/logger';
 
 export default async function getVideoInfo(inputs: string[]): Promise<VideoDTO[]> {
     if (inputs.length === 0) {

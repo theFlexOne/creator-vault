@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import db from "../db";
+import db from "../../lib/sqlite/db";
 import backupDb from "./backup-db";
 
 backupDb();

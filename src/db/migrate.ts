@@ -1,5 +1,5 @@
-import db from './index'
-import { logger } from '../logger'
+import db from '../lib/sqlite/db'
+import { logger } from '../shared/logger'
 import { readdirSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 

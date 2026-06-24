@@ -1,7 +1,7 @@
 import youtubedl from 'youtube-dl-exec';
-import { PayloadWithEntries } from '../../types/youtube-dl';
-import { logger } from '../../logger';
-import { normalizeYoutubeUrl } from '../../services/command.service';
+import { PayloadWithEntries } from './types';
+import { logger } from '../../shared/logger';
+import normalizeYoutubeUrl from './normalizeYoutubeUrl';
 
 export default async function getChannelVideoUrls(input: string, start: number | null = null, limit: number | null = null): Promise<string[]> {
     const url = `${normalizeYoutubeUrl(input)}/videos`;
@@ -31,9 +31,7 @@ export default async function getChannelVideoUrls(input: string, start: number |
         return videoUrls;
     }
     catch (error) {
-        logger.error('Error fetching video URLs via yt-dlp wrapper:', error);
+        logger.error('Error fetching video URLs via YouTube wrapper:', error);
         return [];
     }
 }
-
-

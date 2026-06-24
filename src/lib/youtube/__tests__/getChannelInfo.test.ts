@@ -7,8 +7,9 @@ const mockYoutubeDl = jest.fn() as jest.MockedFunction<(
 ) => Promise<unknown>>;
 const mockLoggerError = jest.fn();
 
-jest.mock('../../../services/command.service', () => ({
-    normalizeYoutubeUrl: (input: string) => mockNormalizeYoutubeUrl(input),
+jest.mock('../normalizeYoutubeUrl', () => ({
+    __esModule: true,
+    default: (input: string) => mockNormalizeYoutubeUrl(input),
 }));
 
 jest.mock('youtube-dl-exec', () => ({
@@ -16,7 +17,7 @@ jest.mock('youtube-dl-exec', () => ({
     default: (...args: unknown[]) => (mockYoutubeDl as any)(...args),
 }));
 
-jest.mock('../../../logger', () => ({
+jest.mock('../../../shared/logger', () => ({
     logger: {
         error: (...args: unknown[]) => mockLoggerError(...args),
     },
@@ -29,7 +30,7 @@ describe('getChannelInfo', () => {
         jest.clearAllMocks();
     });
 
-    it('normalizes the input and maps yt-dlp output to ChannelDTO', async () => {
+    it('normalizes the input and maps YouTube output to ChannelDTO', async () => {
         mockNormalizeYoutubeUrl.mockReturnValue('https://www.youtube.com/@example/videos');
         mockYoutubeDl.mockResolvedValue({
             uploader_id: '@example',
@@ -61,14 +62,14 @@ describe('getChannelInfo', () => {
         expect(mockLoggerError).not.toHaveBeenCalled();
     });
 
-    it('logs and returns undefined when yt-dlp fails', async () => {
+    it('logs and returns undefined when YouTube fetch fails', async () => {
         mockNormalizeYoutubeUrl.mockReturnValue('https://www.youtube.com/@broken/videos');
-        mockYoutubeDl.mockRejectedValue(new Error('yt-dlp failed'));
+        mockYoutubeDl.mockRejectedValue(new Error('YouTube fetch failed'));
 
         await expect(getChannelInfo('@broken')).resolves.toBeUndefined();
 
         expect(mockLoggerError).toHaveBeenCalledWith(
-            'Error fetching via yt-dlp wrapper:',
+            'Error fetching via YouTube wrapper:',
             expect.any(Error),
         );
     });

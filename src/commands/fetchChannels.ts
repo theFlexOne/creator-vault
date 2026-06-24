@@ -1,8 +1,5 @@
 import { CommandModule } from 'yargs';
-import getChannelInfo from '../lib/yt-dlp/getChannelInfo';
-import { upsertChannelInfo } from '../services/db.service';
-import { resolveIdentifiers } from '../services/command.service';
-import { logger } from '../logger';
+import { runFetchChannels } from '../services/fetchChannels.service';
 
 type FetchChannelsCommand = CommandModule<{}, {
     inputs: string[];
@@ -31,33 +28,7 @@ const fetchChannels: FetchChannelsCommand = {
 
     handler: async (argv) => {
         const { inputs, save } = argv;
-        const urls = await resolveIdentifiers(inputs);
-
-        const results = [];
-
-        for (const url of urls) {
-            logger.info(`Fetching channel info for: ${url}`);
-
-            try {
-                const channelInfo = await getChannelInfo(url);
-                if (!channelInfo) {
-                    logger.error(`Failed to fetch channel info for ${url}.`);
-                    continue;
-                }
-
-                results.push(channelInfo);
-
-                if (save) {
-                    upsertChannelInfo(channelInfo);
-                } else {
-                    logger.info(JSON.stringify(channelInfo, null, 2));
-                    logger.info('Channel not saved (use --save to store in DB).');
-                }
-
-            } catch (error) {
-                logger.error(`Error during fetchChannel for ${url}:`, error);
-            }
-        }
+        await runFetchChannels(inputs, save);
     },
 };
 

@@ -1,6 +1,6 @@
 import { copyFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
-import { defaultDbPath, dbDir } from "../db";
+import { defaultDbPath, dbDir } from "../../lib/sqlite/db";
 
 const sourceDbPath = defaultDbPath;
 const repoBackupPath = join(dbDir, 'db.sqlite.bak');

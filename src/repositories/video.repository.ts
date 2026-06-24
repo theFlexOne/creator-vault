@@ -1,29 +1,6 @@
-import db from '../db';
-// import { VideoTranscript } from '../lib/yt-dlp/getChannelTranscripts';
-import { logger } from '../logger';
-import { ChannelDTO, VideoDTO } from '../types/types';
-
-const upsertChannel = db.prepare(`
-    INSERT INTO channels (youtube_channel_id, name, handle, description, followers, tags, url)
-    VALUES (
-        @youtube_channel_id,
-        @name,
-        @handle,
-        COALESCE(@description, ''),
-        COALESCE(@followers, 0),
-        COALESCE(@tags, '[]'),
-        @url
-    )
-    ON CONFLICT(handle) DO UPDATE SET
-        youtube_channel_id = COALESCE(@youtube_channel_id, youtube_channel_id),
-        name = COALESCE(@name, name),
-        handle = COALESCE(@handle, handle),
-        description = COALESCE(@description, description),
-        followers = COALESCE(@followers, followers),
-        tags = COALESCE(@tags, tags),
-        url = COALESCE(@url, url)
-    RETURNING id
-`);
+import db from '../lib/sqlite/db';
+import { VideoDTO } from '../domain/video/video.types';
+import { logger } from '../shared/logger';
 
 const upsertVideo = db.prepare(`
     INSERT INTO videos (
@@ -65,36 +42,6 @@ const upsertVideo = db.prepare(`
         transcript = COALESCE(@transcript, videos.transcript)
     RETURNING id
 `);
-
-// const upsertTranscript = db.prepare(`
-//     INSERT INTO transcripts (video_id, text)
-//     VALUES (?, ?)
-//     ON CONFLICT(video_id) DO UPDATE SET
-//         text = excluded.text
-// `);
-
-export function upsertChannelInfo(data: ChannelDTO): number {
-    if (!data.name || !data.handle || !data.url) {
-        throw new Error('Cannot upsert channel without name, handle, and url.');
-    }
-
-    const channelResult = upsertChannel.get({
-        youtube_channel_id: data.youtubeChannelId ?? data.ytChannelId ?? null,
-        name: data.name,
-        handle: data.handle,
-        description: data.description ?? null,
-        followers: data.followers ?? null,
-        tags: data.tags !== undefined ? JSON.stringify(data.tags) : null,
-        url: data.url,
-    }) as { id: number } | undefined;
-
-    if (!channelResult) {
-        throw new Error(`Failed to upsert channel "${data.handle}".`);
-    }
-
-    logger.info(`Channel "${data.name}" (ID: ${channelResult.id}) upserted.`);
-    return channelResult.id;
-}
 
 export function upsertVideoInfo(channelId: number, videos: VideoDTO[]): number {
     if (!videos || videos.length === 0) {
@@ -140,33 +87,6 @@ export function upsertVideoInfo(channelId: number, videos: VideoDTO[]): number {
     const insertedCount = insertManyVideos(videos);
     logger.info(`Processed ${videos.length} videos. Actually inserted/updated: ${insertedCount}`);
     return insertedCount;
-}
-
-// export function upsertTranscriptData(transcripts: VideoTranscript[]): number {
-//     const insertManyTranscripts = db.transaction((transcriptList: VideoTranscript[]) => {
-//         let count = 0;
-//         for (const t of transcriptList) {
-//             upsertTranscript.run(t.videoId, t.transcript);
-//             count++;
-//         }
-//         return count;
-//     });
-
-//     const storedCount = insertManyTranscripts(transcripts);
-//     logger.info(`Successfully stored ${storedCount} transcripts.`);
-//     return storedCount;
-// }
-
-export function getChannelInternalId(handleOrYoutubeId: string): number | undefined {
-    const stmt = db.prepare('SELECT id FROM channels WHERE handle = ? OR youtube_channel_id = ?');
-    const result = stmt.get(handleOrYoutubeId, handleOrYoutubeId) as { id: number } | undefined;
-    return result?.id;
-}
-
-export function getChannelUrl(handleOrYoutubeId: string): string | undefined {
-    const stmt = db.prepare('SELECT url FROM channels WHERE handle = ? OR youtube_channel_id = ?');
-    const result = stmt.get(handleOrYoutubeId, handleOrYoutubeId) as { url: string } | undefined;
-    return result?.url;
 }
 
 export function getVideosMissingTranscripts(channelInternalId: number, limit?: number): { id: number }[] {

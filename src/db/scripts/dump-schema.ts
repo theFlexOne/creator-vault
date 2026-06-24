@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 import { writeFileSync } from "fs";
-import db, { defaultDbPath } from "..";
+import db, { defaultDbPath } from "../../lib/sqlite/db";
 
 type SchemaObjectType = 'table' | 'view' | 'index' | 'trigger';
 

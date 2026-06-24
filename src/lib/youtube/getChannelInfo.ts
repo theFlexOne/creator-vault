@@ -1,8 +1,8 @@
 import youtubedl from 'youtube-dl-exec';
-import { PayloadWithEntries } from '../../types/youtube-dl';
-import { logger } from '../../logger';
-import { normalizeYoutubeUrl } from '../../services/command.service';
-import { ChannelDTO } from '../../types/types';
+import { PayloadWithEntries } from './types';
+import { logger } from '../../shared/logger';
+import normalizeYoutubeUrl from './normalizeYoutubeUrl';
+import { ChannelDTO } from '../../domain/channel/channel.types';
 
 export default async function getChannelInfo(input: string): Promise<ChannelDTO | undefined> {
     const url = normalizeYoutubeUrl(input);
@@ -26,7 +26,7 @@ export default async function getChannelInfo(input: string): Promise<ChannelDTO 
 
         return channelDto;
     } catch (error) {
-        logger.error('Error fetching via yt-dlp wrapper:', error);
+        logger.error('Error fetching via YouTube wrapper:', error);
         return;
     }
 }

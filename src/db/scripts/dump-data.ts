@@ -1,5 +1,5 @@
 import { writeFileSync } from "fs";
-import db from "..";
+import db from "../../lib/sqlite/db";
 
 function quoteSqlValue(value: unknown) {
     if (value === null || value === undefined) {

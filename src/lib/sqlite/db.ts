@@ -1,12 +1,12 @@
 import Database from 'better-sqlite3'
 import path from 'path'
 import { existsSync, mkdirSync } from 'fs'
-import { logger } from '../logger'
+import { logger } from '../../shared/logger'
 
 // Retrieve DB path from environment or default to src/db/db.sqlite
 const dbDir = path.resolve(process.cwd(), 'src/db')
 if (!existsSync(dbDir)) {
-  mkdirSync(dbDir, { recursive: true })
+    mkdirSync(dbDir, { recursive: true })
 }
 
 const defaultDbPath = path.join(dbDir, 'db.sqlite')

@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import { afterAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { VideoDTO } from '../../types/types';
+import { VideoDTO } from '../../domain/video/video.types';
 
 const mockLoggerInfo = jest.fn();
 const mockLoggerWarn = jest.fn();
@@ -43,12 +43,12 @@ mockDb.exec(`
     );
 `);
 
-jest.mock('../../db', () => ({
+jest.mock('../../lib/sqlite/db', () => ({
     __esModule: true,
     default: mockDb,
 }));
 
-jest.mock('../../logger', () => ({
+jest.mock('../../shared/logger', () => ({
     logger: {
         info: (...args: unknown[]) => mockLoggerInfo(...args),
         warn: (...args: unknown[]) => mockLoggerWarn(...args),
@@ -56,7 +56,8 @@ jest.mock('../../logger', () => ({
     },
 }));
 
-import { getVideosMissingTranscripts, upsertChannelInfo, upsertVideoInfo } from '../db.service';
+import { getVideosMissingTranscripts, upsertVideoInfo } from '../../repositories/video.repository';
+import { upsertChannelInfo } from '../../repositories/channel.repository';
 
 type ChannelRow = {
     id: number;
