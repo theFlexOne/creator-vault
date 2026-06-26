@@ -3,6 +3,9 @@
   "compilerOptions": {
     "outDir": "dist/src",
     "rootDir": "src",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "module": "esnext",
     "moduleResolution": "bundler",
     "allowUnusedLabels": false,
