@@ -1,6 +1,6 @@
 import db from '../lib/sqlite/db';
-import { ChannelDTO } from '../domain/channel/channel.types';
 import { logger } from '../shared/logger';
+import type { ChannelDTO } from '../domain/channel/channel.types';
 
 const upsertChannel = db.prepare(`
     INSERT INTO channels (youtube_channel_id, name, handle, description, followers, tags, url)

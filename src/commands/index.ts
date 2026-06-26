@@ -1,14 +1,11 @@
-import fetchChannels from './fetchChannels';
-import fetchVideos from './fetchVideos';
-import fetchTranscripts from './fetchTranscripts';
+import ingestChannelProfile from './ingestChannelProfile';
+import ingestChannelVideos from './ingestChannelVideos';
+import ingestTranscripts from './ingestTranscripts';
 import testConnection from './testConnection';
 
 export const commands = [
-    fetchChannels,
-    fetchVideos,
-    fetchTranscripts,
+    ingestChannelProfile,
+    ingestChannelVideos,
+    ingestTranscripts,
     testConnection,
 ]
-
-
-

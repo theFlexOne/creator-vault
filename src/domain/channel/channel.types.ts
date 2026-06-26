@@ -1,16 +1,6 @@
-import type { VideoDTO } from '../video/video.types'
+import type { ChannelRecord, VideoRecord } from '../../types/ingestion.types';
 
-export type ChannelDTO = {
-    id?: number
-    youtubeChannelId?: string
-    name?: string
-    handle?: string
-    description?: string
-    followers?: number
-    tags?: string[]
-    url?: string
-
-    // Compatibility aliases currently used by existing app code.
-    ytChannelId?: string
-    videos?: VideoDTO[]
-}
+export type ChannelDTO = ChannelRecord & {
+    ytChannelId?: string;
+    videos?: VideoRecord[];
+};

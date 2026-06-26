@@ -1,14 +1,14 @@
 import { CommandModule } from 'yargs';
-import { runFetchChannels } from '../services/fetchChannels.service';
+import { runIngestChannelProfile } from '../ingest';
 
-type FetchChannelsCommand = CommandModule<{}, {
+type IngestChannelProfileCommand = CommandModule<{}, {
     inputs: string[];
     save: boolean;
 }>;
 
-const fetchChannels: FetchChannelsCommand = {
-    command: 'fetch-channels <inputs..>',
-    describe: 'Fetches channel info. Accepts space-separated URLs, handles, or IDs, or a single .txt/.json file path.',
+const ingestChannelProfile: IngestChannelProfileCommand = {
+    command: 'ingest-channel-profile <inputs..>',
+    describe: 'Ingests YouTube channel profile data using the current channel profile workflow.',
 
     builder: (yargs) => {
         return yargs
@@ -28,8 +28,8 @@ const fetchChannels: FetchChannelsCommand = {
 
     handler: async (argv) => {
         const { inputs, save } = argv;
-        await runFetchChannels(inputs, save);
+        await runIngestChannelProfile(inputs, save);
     },
 };
 
-export default fetchChannels;
+export default ingestChannelProfile;

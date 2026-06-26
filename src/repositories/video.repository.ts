@@ -1,6 +1,6 @@
 import db from '../lib/sqlite/db';
-import { VideoDTO } from '../domain/video/video.types';
 import { logger } from '../shared/logger';
+import type { VideoDTO } from '../domain/video/video.types';
 
 const upsertVideo = db.prepare(`
     INSERT INTO videos (

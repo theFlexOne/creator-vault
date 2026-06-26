@@ -1,0 +1,94 @@
+{
+  "info": {
+    "_postman_id": "2c1e2217-60b7-4d90-9757-a6cf7b503c42",
+    "name": "yt-dlp flatPlaylist inspection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Documentation-only collection. Postman cannot execute yt-dlp flags directly because yt-dlp-exec is a local process wrapper, not an HTTP API. Use these requests as the exact flag presets to compare. The existing captured fixtures in test/channel.json, test/thebeatagp-flat.channel.json, and test/thebeatagp.channel.json are the reference payloads for inspection."
+  },
+  "variable": [
+    {
+      "key": "channelHandle",
+      "value": "@thebeatagp"
+    },
+    {
+      "key": "channelRoot",
+      "value": "https://www.youtube.com/{{channelHandle}}"
+    }
+  ],
+  "item": [
+    {
+      "name": "Channel metadata only",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Equivalent yt-dlp-exec call:\n\nyoutubedl(\"{{channelRoot}}\", {\n  dumpSingleJson: true,\n  skipDownload: true,\n  flatPlaylist: true,\n  playlistItems: \"0\"\n})\n\nUse this when you want top-level channel/container metadata without enumerating actual videos.\n\nFixture source: test/channel.json",
+        "url": {
+          "raw": "{{channelRoot}}",
+          "host": [
+            "{{channelRoot}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Channel videos with flatPlaylist=true",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Equivalent yt-dlp-exec call:\n\nyoutubedl(\"{{channelRoot}}/videos\", {\n  dumpSingleJson: true,\n  skipDownload: true,\n  flatPlaylist: true,\n  playlistStart: 1,\n  playlistEnd: 3\n})\n\nThis returns shallow video entries. In the existing fixture, the first actual video entry is a url-style object with keys like title, id, duration, _type, and url, but not full description/formats/tags.\n\nFixture source: test/thebeatagp-flat.channel.json",
+        "url": {
+          "raw": "{{channelRoot}}/videos",
+          "host": [
+            "{{channelRoot}}"
+          ],
+          "path": [
+            "videos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Channel videos with flatPlaylist=false",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Equivalent yt-dlp-exec call:\n\nyoutubedl(\"{{channelRoot}}/videos\", {\n  dumpSingleJson: true,\n  skipDownload: true,\n  flatPlaylist: false,\n  playlistStart: 1,\n  playlistEnd: 3\n})\n\nThis returns fully extracted nested video objects inside the playlist response. In the existing fixture, the first actual video entry already contains fields like formats, description, webpage_url, categories, tags, duration, view_count, and upload_date.\n\nFixture source: test/thebeatagp.channel.json",
+        "url": {
+          "raw": "{{channelRoot}}/videos",
+          "host": [
+            "{{channelRoot}}"
+          ],
+          "path": [
+            "videos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Single video deep fetch baseline",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Equivalent yt-dlp-exec call for the current per-video fetch pattern:\n\nyoutubedl(\"https://www.youtube.com/watch?v=zNRqmabrbxw\", {\n  dumpSingleJson: true,\n  skipDownload: true\n})\n\nUse this as the baseline for what getVideoInfo currently expects. If channelVideosFull already gives you all the fields you need, you may be able to skip this extra per-video pass for some workflows.",
+        "url": {
+          "raw": "https://www.youtube.com/watch?v=zNRqmabrbxw",
+          "protocol": "https",
+          "host": [
+            "www",
+            "youtube",
+            "com"
+          ],
+          "path": [
+            "watch"
+          ],
+          "query": [
+            {
+              "key": "v",
+              "value": "zNRqmabrbxw"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

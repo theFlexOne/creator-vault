@@ -1,9 +1,9 @@
 import { CommandModule } from 'yargs';
-import { runFetchVideos } from '../services/fetchVideos.service';
+import { runIngestChannelVideos } from '../ingest';
 
-const fetchVideos: CommandModule<{}, { inputs: string[]; limit: number; save: boolean; batch: number }> = {
-    command: 'fetch-videos <inputs..>',
-    describe: 'Fetches video metadata for channels. Accepts space-separated handles/IDs/URLs or a single .txt/.json file path.',
+const ingestChannelVideos: CommandModule<{}, { inputs: string[]; limit: number; save: boolean; batch: number }> = {
+    command: 'ingest-channel-videos <inputs..>',
+    describe: 'Ingests YouTube video metadata using the current video metadata workflow.',
 
     builder: (yargs) => {
         return yargs
@@ -39,8 +39,8 @@ const fetchVideos: CommandModule<{}, { inputs: string[]; limit: number; save: bo
     },
     handler: async (argv) => {
         const { inputs, limit, save, batch } = argv;
-        await runFetchVideos(inputs, limit, save, batch);
-    }
+        await runIngestChannelVideos(inputs, limit, save, batch);
+    },
 };
 
-export default fetchVideos;
+export default ingestChannelVideos;

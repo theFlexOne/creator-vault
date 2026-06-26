@@ -2,10 +2,6 @@
 import type { Payload, Thumbnail, Format, AutomaticCaption } from 'youtube-dl-exec'
 export type { Payload, Thumbnail, Format, AutomaticCaption }
 
-/**
- * Represents a single video entry in a flat playlist response (when flatPlaylist: true).
- * These entries do NOT contain nested entries - they're always leaf nodes.
- */
 export interface FlatEntry {
     id: string
     title: string
@@ -21,10 +17,6 @@ export interface FlatEntry {
     entries?: FlatEntry[]
 }
 
-/**
- * Represents a playlist/channel entry that may contain nested entries.
- * Used for hierarchical playlist structures (when flatPlaylist is not used).
- */
 export interface Entry {
     id: string
     title: string
@@ -50,10 +42,6 @@ export interface Entry {
     entries?: Entry[]
 }
 
-/**
- * Extends the native Payload type with an entries array.
- * Returned when fetching playlists or channels with flatPlaylist: true.
- */
 export interface PayloadWithEntries extends Payload {
     entries: FlatEntry[] | Entry[]
 }

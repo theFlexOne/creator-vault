@@ -1,14 +1,14 @@
 import youtubedl, { Payload } from 'youtube-dl-exec';
-import { VideoDTO } from '../../domain/video/video.types';
 import { logger } from '../../shared/logger';
+import type { VideoRecord } from '../../types/ingestion.types';
 
-export default async function getVideoInfo(inputs: string[]): Promise<VideoDTO[]> {
+export default async function getVideoInfo(inputs: string[]): Promise<VideoRecord[]> {
     if (inputs.length === 0) {
         return [];
     }
 
     const results = await Promise.all(
-        inputs.map(async (input): Promise<VideoDTO | null> => {
+        inputs.map(async (input): Promise<VideoRecord | null> => {
             try {
                 const output = await youtubedl(input, {
                     dumpSingleJson: true,
@@ -33,5 +33,5 @@ export default async function getVideoInfo(inputs: string[]): Promise<VideoDTO[]
         }),
     );
 
-    return results.filter((video): video is VideoDTO => video !== null);
+    return results.filter((video): video is VideoRecord => video !== null);
 }

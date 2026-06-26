@@ -1,6 +1,6 @@
 import db from '../lib/sqlite/db';
 import { logger } from '../shared/logger';
-import { TranscriptDTO } from '../domain/transcript/transcript.types';
+import type { TranscriptDTO } from '../domain/transcript/transcript.types';
 
 // Since the transcript feature was partially commented-out in the original codebase,
 // we export the clean repository methods here for complete structural alignment.

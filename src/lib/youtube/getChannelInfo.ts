@@ -2,9 +2,9 @@ import youtubedl from 'youtube-dl-exec';
 import { PayloadWithEntries } from './types';
 import { logger } from '../../shared/logger';
 import normalizeYoutubeUrl from './normalizeYoutubeUrl';
-import { ChannelDTO } from '../../domain/channel/channel.types';
+import type { ChannelRecord } from '../../types/ingestion.types';
 
-export default async function getChannelInfo(input: string): Promise<ChannelDTO | undefined> {
+export default async function getChannelInfo(input: string): Promise<ChannelRecord | undefined> {
     const url = normalizeYoutubeUrl(input);
     try {
         const output = await youtubedl(url, {
@@ -14,7 +14,7 @@ export default async function getChannelInfo(input: string): Promise<ChannelDTO 
             playlistItems: '0', // Don't fetch any video metadata, just the channel-level info
         }) as PayloadWithEntries
 
-        const channelDto: ChannelDTO = {
+        const channelDto: ChannelRecord = {
             handle: output.uploader_id,
             youtubeChannelId: output.channel_id,
             name: output.channel,
