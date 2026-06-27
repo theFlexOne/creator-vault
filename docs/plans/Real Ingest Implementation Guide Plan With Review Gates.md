@@ -234,6 +234,7 @@ Agent pre-phase review:
 - Review your Phase 7 CLI/report implementation.
 - Confirm README, command behavior, and report types match.
 - Confirm no `fetch-*` CLI commands were reintroduced.
+- Include legacy report/service vocabulary from earlier phases in the final audit, including `fetched`, `fetchedChannel`, and `videosFetched`, and decide whether those names should be changed or explicitly left as low-level retrieval/reporting language.
 
 Agent output:
 - A deletion list for old workflow services, unused helpers, stale TODOs, and stray files.
