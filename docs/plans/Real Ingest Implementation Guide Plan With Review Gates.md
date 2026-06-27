@@ -3,7 +3,7 @@
 This plan follows the completed refactor-only ingest rename work. At the time this plan was written:
 
 - Public CLI vocabulary has moved from `fetch-*` to `ingest-*`.
-- `fetch-channels`, `fetch-videos`, and `fetch-transcripts` should not be reintroduced.
+- The legacy `fetch-*` command family should not be reintroduced.
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
 - The ingest module currently exists as a skeleton with legacy workflow delegation that should be replaced by real orchestration in this follow-up.
 - The relevant TODO reference docs are:

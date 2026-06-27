@@ -129,3 +129,5 @@ node_modules
 
 db.sqlite
 db.sqlite.bak
+
+.old/

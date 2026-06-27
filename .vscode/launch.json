@@ -2,12 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug fetch-videos",
+      "name": "Debug ingest-channel-videos",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/bin/run.ts",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["fetch-videos", "@alisachilders", "-s", "--limit", "1"],
+      "args": ["ingest-channel-videos", "@alisachilders", "-s", "--limit", "1"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]

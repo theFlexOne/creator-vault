@@ -1,4 +1,4 @@
-# Evangelical Tracker (et) CLI Guide
+# Creator Vault (et) CLI Guide
 
 The `et` CLI is a modular tool designed to ingest, clean, and store YouTube data (channels, videos, and transcripts) into a local SQLite database.
 
@@ -37,15 +37,6 @@ The project is moving toward `ingest` as the public workflow language. These com
 **`et test-connection`**
 
 - Verifies that the SQLite database is connected and `yt-dlp` is correctly installed and accessible.
-
----
-
-## Database Management
-
-To reset your database or apply schema changes:
-`npm run db:migrate`
-
-_Note: This will wipe all existing data and re-seed from the JSON files in the `docs/` folder._
 
 ---
 
