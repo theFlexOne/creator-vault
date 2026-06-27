@@ -2,7 +2,7 @@ import { tmpdir } from 'os';
 import { resolveCliInputIdentifiers } from '../cli/input';
 import { logger } from '../shared/logger';
 import { createProductionIngestStorageStub } from './ingestStorage';
-import { createProductionYoutubeSourceStub } from './youtubeSource';
+import { createProductionYoutubeSource } from './youtubeSource';
 import type { IngestStorage } from './ingestStorage';
 import type { YoutubeSource } from './youtubeSource';
 
@@ -33,7 +33,7 @@ export function createDefaultFutureIngestDependencies(): FutureIngestDependencie
         inputLoader: {
             resolveIdentifiers: resolveCliInputIdentifiers,
         },
-        youtubeSource: createProductionYoutubeSourceStub(),
+        youtubeSource: createProductionYoutubeSource(),
         storage: createProductionIngestStorageStub(),
         tempDirectoryProvider: {
             getTempDirectory: tmpdir,

@@ -36,7 +36,7 @@ export type {
 export { createIngestModule } from './ingest.module';
 export { createDefaultFutureIngestDependencies } from './ingest.dependencies';
 export { createLegacyWorkflowIngestAdapter } from './legacyWorkflow.adapter';
-export { createProductionYoutubeSourceStub } from './youtubeSource';
+export { createProductionYoutubeSource, createProductionYoutubeSourceStub } from './youtubeSource';
 export { createProductionIngestStorageStub } from './ingestStorage';
 
 const defaultIngestModule = createIngestModule({

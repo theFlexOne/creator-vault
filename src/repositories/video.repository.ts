@@ -92,7 +92,7 @@ export function upsertVideoInfo(channelId: number, videos: VideoDTO[]): number {
 export function getVideosMissingTranscripts(channelInternalId: number, limit?: number): { id: number }[] {
     let query = `
         SELECT id FROM videos 
-        WHERE channel_id = ? AND id NOT IN (SELECT video_id FROM transcripts)
+        WHERE channel_id = ? AND id NOT IN (SELECT DISTINCT video_id FROM transcripts)
     `;
     const params: (string | number)[] = [channelInternalId];
 

@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS channel_tags_internal;
 DROP TABLE IF EXISTS creator_tags_internal;
+DROP TABLE IF EXISTS transcript_segments;
 DROP TABLE IF EXISTS transcripts;
 DROP TABLE IF EXISTS videos;
 DROP TABLE IF EXISTS creator_bios;
@@ -63,9 +64,31 @@ CREATE TABLE videos (
     )
 );
 CREATE TABLE transcripts (
-    video_id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    video_id INTEGER NOT NULL,
+    caption_source TEXT NOT NULL,
+    language TEXT NOT NULL,
+    version INTEGER NOT NULL,
+    raw_format TEXT NOT NULL,
+    raw_blob TEXT NOT NULL,
+    checksum TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (video_id) REFERENCES videos (id) ON DELETE CASCADE,
+    UNIQUE (video_id, caption_source, language, version),
+    CHECK (caption_source IN ('manual', 'automatic')),
+    CHECK (raw_format = 'json3')
+);
+CREATE TABLE transcript_segments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transcript_id INTEGER NOT NULL,
+    idx INTEGER NOT NULL,
+    start_ms INTEGER NOT NULL,
+    end_ms INTEGER NOT NULL,
     text TEXT NOT NULL,
-    FOREIGN KEY (video_id) REFERENCES videos (id) ON DELETE CASCADE
+    speaker TEXT,
+    confidence REAL,
+    FOREIGN KEY (transcript_id) REFERENCES transcripts (id) ON DELETE CASCADE,
+    UNIQUE (transcript_id, idx)
 );
 CREATE TABLE creator_tags_internal (
     creator_id INTEGER NOT NULL,

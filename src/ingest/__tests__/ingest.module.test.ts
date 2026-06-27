@@ -19,7 +19,7 @@ const createDependencies = (adapter: jest.Mocked<IngestModule>): CreateIngestMod
         fetchChannelVideosPage: async (input, pageRange) => ({
             channelInput: input,
             pageRange,
-            videoUrls: [],
+            videos: [],
         }),
         downloadJson3Captions: async () => [],
     },
