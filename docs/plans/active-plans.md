@@ -1,0 +1,30 @@
+# Active Plans
+
+This file is the repo-owned source of truth for plans that are currently active, paused, blocked, or recently completed.
+
+Use it to answer four questions quickly:
+
+- Which plans are in play right now?
+- Where is the canonical plan document?
+- What state is each plan in?
+- What should the next thread do next?
+
+Status vocabulary:
+
+- `active`: currently being worked or ready to resume now.
+- `paused`: intentionally stopped, but expected to resume.
+- `blocked`: cannot proceed until an external dependency or decision changes.
+- `completed`: finished recently enough that keeping it listed still helps continuity.
+
+## Running Plan Index
+
+| Plan | Status | Current phase | Next step | Last updated |
+| --- | --- | --- | --- | --- |
+| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `active` | `5` | Resume at Phase 5 storage adapter wiring, then review before any Phase 6 orchestration work. | `2026-06-28` |
+| [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `active` | `1` | Start Phase 1 by adding `normalizeYoutubeUrl` branch coverage before moving to CLI input and command-module tests. | `2026-06-28` |
+
+## Update Rules
+
+- Update this file whenever a plan starts, pauses, becomes blocked, completes, or changes its immediate next step.
+- Keep implementation detail in the linked plan docs, not here.
+- Prefer concise next steps that another thread can execute without reading prior conversation history first.
