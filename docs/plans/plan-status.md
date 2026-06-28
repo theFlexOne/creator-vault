@@ -1,4 +1,4 @@
-# Active Plans
+# Plan Status
 
 This file is the repo-owned source of truth for plans that are currently active, in progress, paused, blocked, or recently completed.
 

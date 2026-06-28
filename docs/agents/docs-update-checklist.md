@@ -4,7 +4,7 @@ Agents should use this checklist whenever code, terminology, schema, commands, o
 
 ## Before Editing
 
-- Identify the affected surface: `README.md`, `CONTEXT.md`, `docs/app/`, `docs/guides/`, `docs/plans/`, `docs/plans/active-plans.md`, `docs/postman/`, `docs/agents/`, and relevant source comments or tests.
+- Identify the affected surface: `README.md`, `CONTEXT.md`, `docs/app/`, `docs/guides/`, `docs/plans/`, `docs/plans/plan-status.md`, `docs/postman/`, `docs/agents/`, and relevant source comments or tests.
 - Determine the current canonical name for the thing that changed.
 - Identify any old names, stale paths, or transitional wording that must be removed or rewritten.
 
@@ -14,7 +14,7 @@ Agents should use this checklist whenever code, terminology, schema, commands, o
 - Keep planning docs aligned with current terminology even when they still describe future work.
 - Keep historical or migration notes clearly labeled as such; do not let them read like current guidance.
 - Update examples, commands, links, and file references that point at renamed files or renamed concepts.
-- If a plan's status, current phase, next phase, or immediate next step changes, update `docs/plans/active-plans.md` in the same change.
+- If a plan's status, current phase, next phase, or immediate next step changes, update `docs/plans/plan-status.md` in the same change.
 
 ## Verification
 

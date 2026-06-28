@@ -39,5 +39,5 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 2. `docs/app/cli.md` for command behavior.
 3. `docs/app/ingest-workflows.md` for the current ingest architecture.
 4. `docs/app/database.md` before changing persistence code.
-5. `docs/plans/active-plans.md` to see which plan is currently active and which plans are in progress.
+5. `docs/plans/plan-status.md` to see which plan is currently active and which plans are in progress.
 6. `docs/plans/Ingest Implementation TODO Inventory.md` before starting future ingest implementation work.

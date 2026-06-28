@@ -41,7 +41,7 @@ This command remains independently runnable for backfills and repairs.
 
 Keep future implementation detail in `docs/plans/`. The most relevant planning docs are:
 
-- `docs/plans/active-plans.md`
+- `docs/plans/plan-status.md`
 - `docs/plans/Ingest Implementation TODO Inventory.md`
 - `docs/plans/Future Transcript Schema TODO.md`
 - `docs/plans/Real Ingest Implementation Guide Plan With Review Gates.md`
