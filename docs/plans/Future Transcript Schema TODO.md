@@ -42,16 +42,17 @@ transcript_segments (
 
 ## Remaining Follow-Up
 
+- Use the implemented json3 parser output when wiring ingest storage and orchestration.
 - Wire `src/ingest/ingestStorage.ts` to the existing transcript repository methods instead of treating transcript persistence as future work.
 - Keep `ingest-transcripts` independently runnable for backfills and repairs against the existing `transcripts` table.
 - Remove any remaining plain-text transcript compatibility assumptions from transitional services and tests.
 
 ## Implementation Pointers
 
-- Parser skeleton: `src/transcripts/json3Parser.ts:27`.
-- Parser TODO diagnostic: `src/transcripts/json3Parser.ts:36`.
-- Caption download contract: `src/ingest/youtubeSource.ts:31`.
-- Caption selection policy TODO: `src/ingest/youtubeSource.ts:54`.
+- Parser types: `src/transcripts/json3Parser.ts:3`.
+- Parser implementation: `src/transcripts/json3Parser.ts:63`.
+- Caption download contract: `src/ingest/youtubeSource.ts:36`.
+- Caption selection policy: `src/ingest/youtubeSource.ts:119`.
 - Transcript version types: `src/ingest/ingestStorage.ts:33` and `src/ingest/ingestStorage.ts:43`.
 - Transcript segment type: `src/ingest/ingestStorage.ts:52`.
 - Transcript version and segment save methods: `src/ingest/ingestStorage.ts:70` and `src/ingest/ingestStorage.ts:71`.

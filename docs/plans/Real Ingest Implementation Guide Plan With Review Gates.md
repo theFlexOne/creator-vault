@@ -4,6 +4,8 @@ This plan follows the completed ingest vocabulary cleanup. At the time this plan
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
 - The ingest module still needs real orchestration in place of transitional wiring.
+- Phases 1-4 have been implemented and verified; the next active phase is Phase 5 storage adapter wiring.
+- The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
   - `docs/plans/Future Transcript Schema TODO.md`
