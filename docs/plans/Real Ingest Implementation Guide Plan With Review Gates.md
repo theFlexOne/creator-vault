@@ -4,12 +4,13 @@ This plan follows the completed ingest vocabulary cleanup. At the time this plan
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
 - The ingest module still needs real orchestration in place of transitional wiring.
-- Phases 1-4 have been implemented and verified; the next active phase is Phase 5 storage adapter wiring.
+- Phases 1-4 have been implemented and verified; the next active phase is Phase 5 creator repository extraction.
 - The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
   - `docs/plans/Future Transcript Schema TODO.md`
 - The current database schema already includes versioned `transcripts` plus `transcript_segments`, so the remaining work should build on that model and remove legacy plain-text assumptions from storage wiring and tests.
+- The current database schema already requires `channels.creator_id`, but there is no dedicated creator repository yet. Current channel saves create/reuse creators inline inside `src/repositories/channel.repository.ts`; remaining storage work should extract that concern before wiring production ingest storage.
 - There are root-level sample/data files that may be useful fixtures or stray artifacts; they should be reviewed before deletion.
 - This plan is intentionally written for a human/user-led implementation. The agent should review, explain, and verify only. The agent should not edit code while executing this plan unless explicitly told to abandon that constraint.
 
@@ -148,36 +149,72 @@ Acceptance:
 
 Pause and wait for `continue`.
 
-## Phase 5: Storage Adapter Instructions
+## Phase 5: Creator Repository Instructions
 
 Agent pre-phase review:
 - Review your Phase 4 parser implementation.
 - Confirm parser is pure and diagnostics are stable.
 - Confirm parser tests use fixtures and do not require YouTube, DB, or filesystem writes beyond test fixtures.
+- Inspect `src/repositories/channel.repository.ts` and confirm creator persistence is still inline before extracting it.
+
+Agent output:
+- A repository boundary note showing which creator operations belong in `src/repositories/creator.repository.ts`.
+- Example repository calls for create/reuse by creator name.
+- A channel repository adjustment note showing how channel saves use the creator boundary without owning creator persistence.
+- A docs update checklist note for any changed repository responsibilities.
+
+Implementation guidance:
+- Add `src/repositories/creator.repository.ts` for creator persistence.
+- Move create/reuse-by-name behavior out of `src/repositories/channel.repository.ts`.
+- Keep `src/repositories/channel.repository.ts` responsible for YouTube channel rows and channel lookup only.
+- Preserve current behavior where channel profile saves create or reuse a stub Creator named from the YouTube channel name.
+- Do not change `CONTEXT.md` terminology unless the domain language changes.
+- Follow `docs/agents/docs-update-checklist.md`; update `docs/app/database.md` if repository responsibilities or creator/channel persistence docs change.
+
+Acceptance:
+- Creator repository tests cover create, reuse, and required-name behavior.
+- Channel repository tests prove channel saves still populate `channels.creator_id`.
+- Existing channel profile save behavior is preserved.
+- `npm run compile` passes after your implementation.
+
+Pause and wait for `continue`.
+
+## Phase 6: Storage Adapter Instructions
+
+Agent pre-phase review:
+- Review your Phase 5 creator repository implementation.
+- Confirm creator persistence is no longer hidden inside channel repository internals.
+- Confirm channel saves still populate required `channels.creator_id`.
+- Confirm repository docs were updated where repository responsibilities changed.
 
 Agent output:
 - A storage adapter method map from `IngestStorage` to repository functions.
 - Examples for missing-channel behavior:
   - `createChannel: false` skips safely.
-  - `createChannel: true` creates/reuses a stub Creator named from the YouTube channel name.
+  - `createChannel: true` uses the creator repository to create/reuse a stub Creator named from the YouTube channel name, then saves/reuses the YouTube channel.
 - Examples for transcript versioning:
   - unchanged checksum skips insert.
   - changed checksum inserts next version and segments.
 
 Implementation guidance:
 - Keep DB access inside repositories/storage adapter, not core ingest orchestration.
+- Map `findOrCreateStubCreator` to the creator repository.
+- Map `findOrCreateYoutubeChannel` to the channel repository.
+- Map video persistence to the video repository.
+- Map transcript version and segment persistence to the transcript repository.
 - Add a storage method for finding videos needing transcript backfill, since `ingest-transcripts` must remain independent.
+- Follow `docs/agents/docs-update-checklist.md`; keep storage docs aligned with the creator/channel repository boundary.
 
 Acceptance:
-- Storage tests cover channel create/update, missing-channel skip, stub creator creation, video saves, transcript version skip/insert, and segment saves.
+- Storage tests cover channel create/update, missing-channel skip, creator-repository-backed stub creator creation, video saves, transcript version skip/insert, and segment saves.
 - `npm run compile` passes after your implementation.
 
 Pause and wait for `continue`.
 
-## Phase 6: Ingest Orchestration Instructions
+## Phase 7: Ingest Orchestration Instructions
 
 Agent pre-phase review:
-- Review your Phase 5 storage adapter implementation.
+- Review your Phase 6 storage adapter implementation.
 - Confirm core ingest logic still has no direct DB imports.
 - Confirm storage tests prove missing-channel and transcript-version behavior.
 
@@ -200,10 +237,10 @@ Acceptance:
 
 Pause and wait for `continue`.
 
-## Phase 7: CLI and Report Finalization
+## Phase 8: CLI and Report Finalization
 
 Agent pre-phase review:
-- Review your Phase 6 orchestration implementation.
+- Review your Phase 7 orchestration implementation.
 - Confirm transitional delegation is gone only if equivalent tests exist.
 - Confirm `--save=false` does not write and `ingest-transcripts` does not retrieve metadata again.
 
@@ -218,6 +255,7 @@ Implementation guidance:
 - Keep `--limit`.
 - Treat `--batch` as metadata page size; default `10`.
 - Include report fields for channels, videos, captions, transcript versions, skipped records, parser diagnostics, and failures.
+- Follow `docs/agents/docs-update-checklist.md`; update README/app docs for final ingest behavior and options.
 
 Acceptance:
 - Command tests verify option parsing.
@@ -226,10 +264,10 @@ Acceptance:
 
 Pause and wait for `continue`.
 
-## Phase 8: Final Legacy and Stray Code Cleanup
+## Phase 9: Final Legacy and Stray Code Cleanup
 
 Agent pre-phase review:
-- Review your Phase 7 CLI/report implementation.
+- Review your Phase 8 CLI/report implementation.
 - Confirm README, command behavior, and report types match.
 - Confirm no legacy CLI commands were reintroduced.
 - Include report/service vocabulary from earlier phases in the final audit and decide whether any remaining names should be changed or explicitly left as low-level retrieval/reporting language.
@@ -244,6 +282,7 @@ Implementation guidance:
 - Remove temporary TODOs that referenced transitional delegation.
 - Keep TODOs only for deferred product work.
 - Re-run the stray-file audit from Phase 1 and resolve anything left yourself.
+- Follow `docs/agents/docs-update-checklist.md`; confirm current-state docs match final storage, orchestration, and CLI behavior.
 
 Acceptance:
 - No workflow-level legacy vocabulary remains.

@@ -20,11 +20,12 @@ Status vocabulary:
 
 | Plan | Status | Current phase | Next step | Last updated |
 | --- | --- | --- | --- | --- |
-| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `active` | `5` | Resume at Phase 5 storage adapter wiring, then review before any Phase 6 orchestration work. | `2026-06-28` |
+| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `active` | `5` | Resume at Phase 5 creator repository extraction, then review before Phase 6 storage adapter wiring. | `2026-06-28` |
 | [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `active` | `1` | Start Phase 1 by adding `normalizeYoutubeUrl` branch coverage before moving to CLI input and command-module tests. | `2026-06-28` |
 
 ## Update Rules
 
 - Update this file whenever a plan starts, pauses, becomes blocked, completes, or changes its immediate next step.
+- When editing a linked plan's phase sequence, status, or next active step, update this row in the same commit/change.
 - Keep implementation detail in the linked plan docs, not here.
 - Prefer concise next steps that another thread can execute without reading prior conversation history first.
