@@ -39,9 +39,9 @@ npm run start -- ingest-channel-profile channels.txt --save
 
 Options:
 
-- `--save`, `-s`: save fetched channel profile data to SQLite. Default: `false`.
+- `--save`, `-s`: save channel profile data to SQLite. Default: `false`.
 
-Without `--save`, fetched channel data is logged but not persisted.
+Without `--save`, channel data is logged but not persisted.
 
 ## `ingest-channel-videos <inputs..>`
 
@@ -58,8 +58,8 @@ npm run start -- ingest-channel-videos channels.txt --limit 100 --batch 20 --sav
 Options:
 
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
-- `--batch <number>`: number of video URLs to fetch metadata for per batch. Default: `20`.
-- `--save`, `-s`: save fetched video metadata to SQLite. Default: `false`.
+- `--batch <number>`: number of video URLs to retrieve metadata for per batch. Default: `20`.
+- `--save`, `-s`: save video metadata to SQLite. Default: `false`.
 
 `--limit` and `--batch` must be greater than zero.
 
@@ -80,9 +80,9 @@ npm run start -- ingest-transcripts channels.txt --limit 50 --save
 Options:
 
 - `--limit <number>`: maximum transcripts to ingest per channel. Default: `10`.
-- `--save`, `-s`: save fetched transcripts to SQLite. Default: `false`.
+- `--save`, `-s`: save transcripts to SQLite. Default: `false`.
 
-The command looks up the channel in SQLite, selects stored videos missing transcript rows, fetches transcripts, and stores them only when `--save` is enabled.
+The command looks up the channel in SQLite, selects stored videos missing transcript rows, retrieves transcripts, and stores them only when `--save` is enabled.
 
 ## `test-connection`
 

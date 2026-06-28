@@ -65,11 +65,11 @@
       }
     },
     {
-      "name": "Single video deep fetch baseline",
+      "name": "Single video metadata baseline",
       "request": {
         "method": "GET",
         "header": [],
-        "description": "Equivalent yt-dlp-exec call for the current per-video fetch pattern:\n\nyoutubedl(\"https://www.youtube.com/watch?v=zNRqmabrbxw\", {\n  dumpSingleJson: true,\n  skipDownload: true\n})\n\nUse this as the baseline for what getVideoInfo currently expects. If channelVideosFull already gives you all the fields you need, you may be able to skip this extra per-video pass for some workflows.",
+        "description": "Equivalent yt-dlp-exec call for the current per-video metadata pattern:\n\nyoutubedl(\"https://www.youtube.com/watch?v=zNRqmabrbxw\", {\n  dumpSingleJson: true,\n  skipDownload: true\n})\n\nUse this as the baseline for what getVideoInfo currently expects. If channelVideosFull already gives you all the fields you need, you may be able to skip this extra per-video pass for some workflows.",
         "url": {
           "raw": "https://www.youtube.com/watch?v=zNRqmabrbxw",
           "protocol": "https",

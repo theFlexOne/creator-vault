@@ -15,11 +15,13 @@ Use `docs/app/` for durable docs that describe the app as it works now.
 
 Use `docs/guides/` for supporting how-to material that helps maintain the app but is not the canonical current-state description.
 
-- `guides/better-sqlite.md`: project-specific `better-sqlite3` practices extracted from the older root guide.
+- `guides/better-sqlite.md`: project-specific `better-sqlite3` practices adapted from the older root guide.
 
 ## Plans
 
 Use `docs/plans/` for future work, TODO inventories, PRD-style notes, implementation plans, and review-gated work.
+
+Any future plan that changes behavior, terminology, schema, or command surface should include a documentation update step and should reference `docs/agents/docs-update-checklist.md`.
 
 Important current plan artifacts:
 
@@ -32,4 +34,5 @@ These files are intentionally not app docs. Link to them when documenting known 
 ## Agent And Tooling Docs
 
 - `docs/agents/`: issue tracker, triage labels, and domain-doc instructions for agents.
+- `docs/agents/docs-update-checklist.md`: required docs-update checklist for code and terminology changes.
 - `docs/postman/`: Postman collections and external-tool inspection artifacts.

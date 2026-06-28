@@ -34,7 +34,8 @@ npm run db:dump:data
 - `creator_bios`: extended creator biography fields.
 - `channels`: YouTube channel metadata owned by one creator.
 - `videos`: YouTube video metadata owned by one channel.
-- `transcripts`: one plain-text transcript row per video.
+- `transcripts`: versioned transcript metadata and raw json3 payloads per video.
+- `transcript_segments`: normalized segment rows for each stored transcript version.
 - `creator_tags_internal`: creator-to-tag join table.
 - `channel_tags_internal`: channel-to-tag join table.
 
@@ -46,12 +47,19 @@ The current durable transcript table is:
 
 ```sql
 transcripts (
-  video_id INTEGER PRIMARY KEY,
-  text TEXT NOT NULL
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  video_id INTEGER NOT NULL,
+  caption_source TEXT NOT NULL,
+  language TEXT NOT NULL,
+  version INTEGER NOT NULL,
+  raw_format TEXT NOT NULL,
+  raw_blob TEXT NOT NULL,
+  checksum TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 )
 ```
 
-Versioned json3 transcript storage and normalized transcript segments are planned but not implemented. See `docs/plans/Future Transcript Schema TODO.md`.
+`transcript_segments` stores the parsed segment rows for each transcript version. See `src/db/schema.sql` for the full transcript schema.
 
 ## Known Schema And Repository Drift
 
@@ -62,7 +70,7 @@ Known drift:
 - `src/db/schema.sql` uses `source_tags`, while some repository SQL still refers to `tags`.
 - The current `channels` schema requires `creator_id`, while channel upsert code does not provide one.
 - Some older database artifacts include legacy tables such as `tags`, `creator_channels`, `creator_tags`, and `channel_tags`.
-- Future transcript version tables are documented in plans only; they are not in the current production schema.
+- Transcript versioning and segment storage are already present in the current production schema and repository code.
 
 Runtime impact:
 

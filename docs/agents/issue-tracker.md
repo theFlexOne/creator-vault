@@ -23,6 +23,6 @@ This repo does not treat external PRs as inbound requests for triage.
 
 Create a GitHub issue.
 
-## When a skill says "fetch the relevant ticket"
+## When a skill says "read the relevant ticket"
 
 Run `gh issue view <number> --comments`.

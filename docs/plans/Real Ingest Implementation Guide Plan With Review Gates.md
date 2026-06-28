@@ -1,15 +1,13 @@
 # Context For Later Implementation
 
-This plan follows the completed refactor-only ingest rename work. At the time this plan was written:
+This plan follows the completed ingest vocabulary cleanup. At the time this plan was written:
 
-- Public CLI vocabulary has moved from `fetch-*` to `ingest-*`.
-- The legacy `fetch-*` command family should not be reintroduced.
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
-- The ingest module currently exists as a skeleton with legacy workflow delegation that should be replaced by real orchestration in this follow-up.
+- The ingest module still needs real orchestration in place of transitional wiring.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
   - `docs/plans/Future Transcript Schema TODO.md`
-- The current database schema still has an old text-only `transcripts(video_id, text)` table, so the real transcript implementation must reconcile that with the intended versioned transcript schema.
+- The current database schema still has a plain-text `transcripts(video_id, text)` table, so the real transcript implementation must reconcile that with the intended versioned transcript schema.
 - There are root-level sample/data files that may be useful fixtures or stray artifacts; they should be reviewed before deletion.
 - This plan is intentionally written for a human/user-led implementation. The agent should review, explain, and verify only. The agent should not edit code while executing this plan unless explicitly told to abandon that constraint.
 
@@ -36,7 +34,7 @@ At the end of each phase, the agent must provide a gate report with:
 - **Implementation notes produced:** concise list of docs, examples, commands, or design notes provided to the user.
 - **Code edited by agent:** must be `No`.
 - **Behavior changed by agent:** must be `No runtime behavior change`.
-- **Scope check:** confirm no code edits, no production schema change by the agent, no file deletion by the agent, no `fetch-*` CLI reintroduction, no cache workflow, and no public `--json`.
+- **Scope check:** confirm no code edits, no production schema change by the agent, no file deletion by the agent, no legacy CLI reintroduction, no cache workflow, and no public `--json`.
 - **Verification run:** exact non-mutating commands run and pass/fail status.
 - **Known risks:** uncertainty, test gaps, or decisions still requiring user implementation.
 - **Next phase preview:** one sentence describing the next phase.
@@ -83,7 +81,7 @@ Agent output:
   - `transcripts`: version metadata, raw json3 blob, checksum.
   - `transcript_segments`: normalized time-coded transcript rows.
 - A repository method sketch for saving transcript versions and segments.
-- A decision note for seed/test migration from any old text-only transcript rows.
+- A decision note for seed/test migration from any plain-text transcript rows.
 
 Implementation guidance:
 - Update `src/db/schema.sql` yourself only after the design note is clear.
@@ -106,8 +104,8 @@ Agent pre-phase review:
 Agent output:
 - A source adapter design note showing how `YoutubeSource` hides yt-dlp details from ingest orchestration.
 - Example call shapes for:
-  - `fetchChannelProfile(input)`
-  - `fetchChannelVideosPage(input, { playlistStart, playlistEnd })`
+  - `getChannelProfile(input)`
+  - `getChannelVideosPage(input, { playlistStart, playlistEnd })`
   - `downloadJson3Captions(requests, tempDir)`
 - Mocked yt-dlp examples proving expected options.
 
@@ -115,7 +113,7 @@ Implementation guidance:
 - Use `/videos` with `dumpSingleJson: true`, `skipDownload: true`, `flatPlaylist: false`, `playlistStart`, and `playlistEnd`.
 - Keep default chunk/page size at `10` until larger chunks are validated.
 - Prefer manual English json3 captions, then automatic English fallback.
-- Keep `fetch` naming only inside this low-level retrieval adapter.
+- Keep retrieval naming only inside this low-level retrieval adapter.
 
 Acceptance:
 - Adapter tests mock external calls.
@@ -130,7 +128,7 @@ Pause and wait for `continue`.
 Agent pre-phase review:
 - Review your Phase 3 source adapter implementation.
 - Confirm tests mock external YouTube/yt-dlp calls.
-- Confirm `fetch` vocabulary remains source-level only.
+- Confirm low-level retrieval vocabulary remains source-level only.
 
 Agent output:
 - Parser examples using small json3 fixtures.
@@ -189,15 +187,15 @@ Agent output:
 - Report-shape examples for success, partial failure, and dry-run behavior.
 
 Implementation guidance:
-- Remove legacy workflow delegation only after fake-driven tests cover new orchestration.
-- `ingest-channel-profile`: resolve inputs, fetch profiles, save only with `--save`.
-- `ingest-channel-videos`: resolve inputs, fetch profile, fetch chunked video metadata, save videos, download captions, parse, save transcript versions/segments with `--save`.
-- `ingest-transcripts`: process existing DB videos missing transcript versions; do not refetch video metadata.
+- Remove transitional workflow delegation only after fake-driven tests cover new orchestration.
+- `ingest-channel-profile`: resolve inputs, retrieve profiles, save only with `--save`.
+- `ingest-channel-videos`: resolve inputs, retrieve profile, retrieve chunked video metadata, save videos, download captions, parse, save transcript versions/segments with `--save`.
+- `ingest-transcripts`: process existing DB videos missing transcript versions; do not retrieve video metadata again.
 - `--save=false` must not write to SQLite.
 
 Acceptance:
 - Ingest module tests verify orchestration order with fakes.
-- Legacy adapter can be deleted safely by you.
+- Compatibility adapter can be deleted safely by you.
 - `npm run compile` passes after your implementation.
 
 Pause and wait for `continue`.
@@ -206,8 +204,8 @@ Pause and wait for `continue`.
 
 Agent pre-phase review:
 - Review your Phase 6 orchestration implementation.
-- Confirm legacy delegation is gone only if equivalent tests exist.
-- Confirm `--save=false` does not write and `ingest-transcripts` does not refetch metadata.
+- Confirm transitional delegation is gone only if equivalent tests exist.
+- Confirm `--save=false` does not write and `ingest-transcripts` does not retrieve metadata again.
 
 Agent output:
 - Final CLI option table for all ingest commands.
@@ -233,23 +231,23 @@ Pause and wait for `continue`.
 Agent pre-phase review:
 - Review your Phase 7 CLI/report implementation.
 - Confirm README, command behavior, and report types match.
-- Confirm no `fetch-*` CLI commands were reintroduced.
-- Include legacy report/service vocabulary from earlier phases in the final audit, including `fetched`, `fetchedChannel`, and `videosFetched`, and decide whether those names should be changed or explicitly left as low-level retrieval/reporting language.
+- Confirm no legacy CLI commands were reintroduced.
+- Include report/service vocabulary from earlier phases in the final audit and decide whether any remaining names should be changed or explicitly left as low-level retrieval/reporting language.
 
 Agent output:
 - A deletion list for old workflow services, unused helpers, stale TODOs, and stray files.
 - A separate “ask user” list for anything ambiguous.
-- A final vocabulary audit showing `fetch` remains only for low-level external retrieval.
+- A final vocabulary audit showing retrieval vocabulary remains only for low-level external access.
 
 Implementation guidance:
 - Delete old workflow-level services only after equivalent ingest module coverage exists.
-- Remove temporary TODOs that referenced legacy delegation.
+- Remove temporary TODOs that referenced transitional delegation.
 - Keep TODOs only for deferred product work.
 - Re-run the stray-file audit from Phase 1 and resolve anything left yourself.
 
 Acceptance:
-- No workflow-level `fetch` vocabulary remains.
-- No legacy ingest delegation remains.
+- No workflow-level legacy vocabulary remains.
+- No transitional ingest delegation remains.
 - No unexplained root-level sample/data files remain.
 - Full `npm test` passes after your implementation.
 - `npm run compile` passes after your implementation.
@@ -280,4 +278,4 @@ The agent must not run commands that rewrite tracked files.
 - `ingest-channel-videos` becomes the main end-to-end workflow.
 - `ingest-transcripts` remains a DB-backed repair/backfill workflow.
 - `--save=false` never writes to SQLite.
-- No cache workflow, public `--json`, or `fetch-*` CLI commands are added back.
+- No cache workflow, public `--json`, or legacy CLI commands are added back.

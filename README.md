@@ -1,6 +1,6 @@
 # Creator Vault
 
-Creator Vault is a TypeScript CLI for collecting YouTube creator data into a local SQLite database. The current app focuses on YouTube channel profiles, channel video metadata, and transcripts.
+Creator Vault is a TypeScript CLI for collecting YouTube creator data into a local SQLite database. The app focuses on YouTube channel profiles, channel video metadata, and transcripts.
 
 The CLI binary is named `et`.
 
@@ -53,13 +53,13 @@ et <command>
 
 ## Current Workflow
 
-The current ingest workflow is still a three-step pipeline:
+The ingest workflow currently runs as a three-step pipeline:
 
 1. Ingest channel profile data.
 2. Ingest video metadata for channels that already exist in the database.
 3. Ingest transcripts for stored videos missing transcripts.
 
-Each ingest command supports a dry-run style mode by default. Add `--save` to persist results to SQLite.
+Each ingest command runs in dry-run style by default. Add `--save` to persist results to SQLite.
 
 ## Commands
 
@@ -76,7 +76,7 @@ Inputs may be YouTube URLs, handles, channel IDs, or a single input file. A `.tx
 
 Options:
 
-- `--save`, `-s`: persist fetched channel profile data.
+- `--save`, `-s`: persist channel profile data.
 
 ### `ingest-channel-videos <inputs..>`
 
@@ -91,7 +91,7 @@ Options:
 
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
 - `--batch <number>`: video metadata batch size. Default: `20`.
-- `--save`, `-s`: persist fetched video metadata.
+- `--save`, `-s`: persist video metadata.
 
 When saving, the command expects the channel to already exist in the database.
 
@@ -107,7 +107,7 @@ npm run start -- ingest-transcripts channels.txt --limit 50 --save
 Options:
 
 - `--limit <number>`: maximum transcripts to ingest per channel. Default: `10`.
-- `--save`, `-s`: persist fetched transcripts.
+- `--save`, `-s`: persist transcripts.
 
 When saving or selecting videos, the command expects the channel and video metadata to already exist in the database.
 
@@ -166,10 +166,9 @@ npm run test:services
 npm run test:lib
 ```
 
-## Current Limits
+## Current Notes
 
-- The public workflow language is now `ingest`, but the implementation still delegates to legacy workflow services through `src/ingest/legacyWorkflow.adapter.ts`.
 - `ingest-channel-videos` currently ingests video metadata only. It does not yet combine channel profile, video metadata, and transcript ingestion into one workflow.
 - Transcript storage currently uses one `transcripts` row per video with plain text. Versioned json3 transcript storage is planned but not implemented.
-- The checked-in schema and repository SQL have known drift around tag/transcript columns and channel save requirements. Treat `docs/app/database.md` and `docs/plans/*Transcript*` as the starting points before changing persistence behavior.
+- The checked-in schema and repository SQL still have known drift around tag/transcript columns and channel save requirements. Treat `docs/app/database.md` and the transcript planning docs as the starting point before changing persistence behavior.
 - Because repository SQL is prepared during command import, this drift can currently block even `--help` and `test-connection` against `src/db/db.sqlite`.

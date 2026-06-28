@@ -4,8 +4,8 @@ This note records the real-ingestion work intentionally left out of the refactor
 
 ## Remaining Implementation Work
 
-- Replace legacy per-video metadata fanout with one-request channel/video metadata retrieval.
-  Current old path: `src/services/ingestChannelVideos.service.ts:98` gets URLs first, then `src/services/ingestChannelVideos.service.ts:113` fetches video info per batch. Future source shape is noted at `src/ingest/youtubeSource.ts:11`.
+- Replace the older per-video metadata fanout with one-request channel/video metadata retrieval.
+  Current implementation path: `src/services/ingestChannelVideos.service.ts:98` gets URLs first, then `src/services/ingestChannelVideos.service.ts:113` retrieves video info per batch. The future source shape is noted at `src/ingest/youtubeSource.ts:11`.
 
 - Validate chunk-size behavior for `/videos` metadata ingestion.
   Placeholder range type is `src/ingest/youtubeSource.ts:3`, and playlist range TODO is `src/ingest/youtubeSource.ts:45`.
@@ -34,5 +34,5 @@ This note records the real-ingestion work intentionally left out of the refactor
 - Persist transcript versions, raw json3 payloads, checksums, and normalized segments.
   Version input/record types are `src/ingest/ingestStorage.ts:33` and `src/ingest/ingestStorage.ts:43`. Segment type is `src/ingest/ingestStorage.ts:52`. Save methods are `src/ingest/ingestStorage.ts:70` and `src/ingest/ingestStorage.ts:71`.
 
-- Remove remaining legacy compatibility TODOs after real source and storage adapters replace legacy workflows.
-  Current delegation is `src/ingest/ingest.module.ts:13`. Legacy adapter is `src/ingest/legacyWorkflow.adapter.ts:6`. Default wiring still uses it at `src/ingest/index.ts:44`.
+- Remove remaining compatibility TODOs after the real source and storage adapters replace transitional wiring.
+  Current delegation is `src/ingest/ingest.module.ts:13`. Default wiring still uses it at `src/ingest/index.ts:44`.

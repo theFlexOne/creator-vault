@@ -70,4 +70,4 @@ For file-level backup behavior, use the existing scripts in `src/db/scripts/` be
 
 ## What Was Not Carried Forward
 
-The old guide contained broad `better-sqlite3` tutorial examples using stale project paths and legacy table names. Those examples were not preserved here. Current app schema documentation belongs in `docs/app/database.md`; this guide is only for reusable SQLite practices.
+The previous guide contained broad `better-sqlite3` tutorial examples using stale project paths and older table names. Those examples were not preserved here. Current app schema documentation belongs in `docs/app/database.md`; this guide is only for reusable SQLite practices.

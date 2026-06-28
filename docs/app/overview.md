@@ -1,6 +1,6 @@
 # Application Overview
 
-Creator Vault is a TypeScript CLI for collecting YouTube creator data into a local SQLite database. The current domain is creator-centric: a Creator owns platform-specific publishing surfaces, and the active platform surface is a YouTube Channel.
+Creator Vault is a TypeScript CLI for collecting YouTube creator data into a local SQLite database. The domain is creator-centric: a Creator owns platform-specific publishing surfaces, and the active platform surface is a YouTube Channel.
 
 ## Main Concepts
 
@@ -16,13 +16,13 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 - CLI entrypoint: `bin/run.ts`.
 - Command registry: `src/commands/index.ts`.
 - Public ingest module: `src/ingest/index.ts`.
-- Current workflow adapter: `src/ingest/legacyWorkflow.adapter.ts`.
-- Legacy workflow services: `src/services/ingestChannelProfile.service.ts`, `src/services/ingestChannelVideos.service.ts`, and `src/services/ingestTranscripts.service.ts`.
+- Ingest implementation: `src/ingest/`.
+- Workflow services: `src/services/ingestChannelProfile.service.ts`, `src/services/ingestChannelVideos.service.ts`, and `src/services/ingestTranscripts.service.ts`.
 - YouTube helpers: `src/lib/youtube/`.
 - SQLite connection: `src/lib/sqlite/db.ts`.
 - Persistence repositories: `src/repositories/`.
 
-`bin/run.ts` loads environment variables with `dotenv`, registers all yargs commands, and requires at least one command. Commands call the ingest module or service layer. The ingest module currently preserves behavior by delegating to the legacy workflow adapter.
+`bin/run.ts` loads environment variables with `dotenv`, registers all yargs commands, and requires at least one command. Commands call the ingest module or service layer.
 
 ## Data Flow
 
@@ -30,7 +30,7 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 2. yargs parses command arguments and options.
 3. Command handlers call `src/ingest` functions or diagnostic services.
 4. Ingest workflows resolve identifiers from direct args or one input file.
-5. YouTube helpers fetch channel, video, or transcript data.
+5. YouTube helpers retrieve channel, video, or transcript data.
 6. Repositories write to SQLite only when `--save` is enabled.
 
 ## What To Read First
