@@ -23,7 +23,7 @@ Use `docs/plans/` for future work, TODO inventories, PRD-style notes, implementa
 
 Any future plan that changes behavior, terminology, schema, or command surface should include a documentation update step and should reference `docs/agents/docs-update-checklist.md`.
 
-Use `plans/active-plans.md` first when you need the current cross-thread view of in-progress work.
+Use `plans/active-plans.md` first when you need the current cross-thread view of active and in-progress work.
 
 Important current plan artifacts:
 
