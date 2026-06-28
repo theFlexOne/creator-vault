@@ -15,7 +15,7 @@ The current app uses a three-step YouTube pipeline.
 
 `ingest-channel-profile` resolves input identifiers and retrieves channel profile data with `getChannelInfo`.
 
-With `--save`, it calls `upsertChannelInfo`. Without `--save`, it logs retrieved data.
+With `--save`, it calls `upsertChannelInfo`. Without `--save`, it logs retrieved data. When saving, the repository creates or reuses a stub Creator keyed by the channel name and stores the channel with that `creator_id`.
 
 ### 2. Channel Videos
 
@@ -33,7 +33,7 @@ This command remains independently runnable for backfills and repairs.
 
 - The ingest module is still transitional, but the public command surface already uses `ingest` names.
 - `ingest-channel-videos` does not yet ingest channel profile data, video metadata, and transcripts in one workflow.
-- Missing-channel creation with a stub Creator is planned but not implemented.
+- Missing-channel creation inside the channel-videos storage flow is still planned; `ingest-channel-profile --save` already creates or reuses the required stub Creator for direct channel saves.
 - Transcript ingestion now stores versioned json3 transcript blobs in `transcripts` and parsed rows in `transcript_segments`.
 - `src/repositories/transcript.repository.ts` handles transcript version lookup, deduplication, and segment storage.
 

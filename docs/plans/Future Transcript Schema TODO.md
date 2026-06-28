@@ -1,8 +1,8 @@
-# Future Transcript Schema TODO
+# Current Transcript Schema And Follow-Up
 
-This note records the intended transcript storage shape for the later real-ingestion implementation. It is documentation only; no production schema migration is applied in the refactor-only ingest rename pass.
+This file name is historical. The current production schema already uses the transcript model documented here. The remaining ingest work is storage wiring and orchestration cleanup, not transcript table creation.
 
-## Intended Tables
+## Current Tables
 
 ```sql
 transcripts (
@@ -29,16 +29,22 @@ transcript_segments (
 );
 ```
 
-## Versioning Rule
+## Current Versioning Rule
 
 - If the raw json3 checksum is unchanged for a video, caption source, and language, skip inserting a new transcript version.
 - If the checksum changed, insert the next transcript version and its normalized segments.
 
-## Storage Policy
+## Current Storage Policy
 
 - Store the raw json3 payload in SQLite so normalized segments can be audited against the original source.
 - Treat temp json3 files as staging only; the database is the durable transcript store.
 - Prefer manual English captions first, then automatic English captions when manual captions are unavailable.
+
+## Remaining Follow-Up
+
+- Wire `src/ingest/ingestStorage.ts` to the existing transcript repository methods instead of treating transcript persistence as future work.
+- Keep `ingest-transcripts` independently runnable for backfills and repairs against the existing `transcripts` table.
+- Remove any remaining plain-text transcript compatibility assumptions from transitional services and tests.
 
 ## Implementation Pointers
 

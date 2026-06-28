@@ -9,15 +9,25 @@ const mockLoggerError = jest.fn();
 const mockDb = new Database(':memory:');
 
 mockDb.exec(`
+    CREATE TABLE creators (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE NOT NULL,
+        description TEXT,
+        occupation TEXT,
+        education TEXT
+    );
+
     CREATE TABLE channels (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        youtube_channel_id TEXT UNIQUE,
+        youtube_channel_id TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
         handle TEXT UNIQUE NOT NULL,
         description TEXT NOT NULL DEFAULT '',
         followers INTEGER NOT NULL DEFAULT 0,
-        tags TEXT NOT NULL DEFAULT '[]',
-        url TEXT UNIQUE NOT NULL
+        source_tags TEXT NOT NULL DEFAULT '[]',
+        url TEXT UNIQUE NOT NULL,
+        creator_id INTEGER NOT NULL,
+        FOREIGN KEY (creator_id) REFERENCES creators (id) ON DELETE CASCADE
     );
 
     CREATE TABLE videos (
@@ -31,8 +41,7 @@ mockDb.exec(`
         upload_date TEXT,
         view_count INTEGER NOT NULL DEFAULT 0,
         categories TEXT NOT NULL DEFAULT '[]',
-        tags TEXT NOT NULL DEFAULT '[]',
-        transcript TEXT NOT NULL DEFAULT '[]',
+        source_tags TEXT NOT NULL DEFAULT '[]',
         FOREIGN KEY (channel_id) REFERENCES channels (id) ON DELETE CASCADE
     );
 
@@ -90,13 +99,22 @@ import {
 
 type ChannelRow = {
     id: number;
-    youtube_channel_id: string | null;
+    youtube_channel_id: string;
     name: string;
     handle: string;
     description: string;
     followers: number;
-    tags: string;
+    source_tags: string;
     url: string;
+    creator_id: number;
+};
+
+type CreatorRow = {
+    id: number;
+    name: string;
+    description: string | null;
+    occupation: string | null;
+    education: string | null;
 };
 
 type VideoRow = {
@@ -110,8 +128,7 @@ type VideoRow = {
     upload_date: string | null;
     view_count: number;
     categories: string;
-    tags: string;
-    transcript: string;
+    source_tags: string;
 };
 
 type TranscriptRow = {
@@ -143,10 +160,12 @@ describe('db.service upserts', () => {
         mockDb.exec('DELETE FROM transcripts;');
         mockDb.exec('DELETE FROM videos;');
         mockDb.exec('DELETE FROM channels;');
+        mockDb.exec('DELETE FROM creators;');
         mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'transcript_segments';");
         mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'transcripts';");
         mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'videos';");
         mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'channels';");
+        mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'creators';");
         mockLoggerInfo.mockClear();
         mockLoggerWarn.mockClear();
         mockLoggerError.mockClear();
@@ -156,7 +175,7 @@ describe('db.service upserts', () => {
         mockDb.close();
     });
 
-    it('inserts a new channel and returns its id', () => {
+    it('inserts a new channel, creates a stub creator, and returns its id', () => {
         const id = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
@@ -177,13 +196,21 @@ describe('db.service upserts', () => {
             handle: '@alpha',
             description: 'Alpha description',
             followers: 12,
-            tags: '["news","updates"]',
+            source_tags: '["news","updates"]',
             url: 'https://www.youtube.com/@alpha',
+            creator_id: 1,
         });
+        expect(mockDb.prepare('SELECT * FROM creators').get()).toEqual({
+            id: 1,
+            name: 'Alpha',
+            description: null,
+            occupation: null,
+            education: null,
+        } satisfies CreatorRow);
         expect(mockLoggerInfo).toHaveBeenCalledWith('Channel "Alpha" (ID: 1) upserted.');
     });
 
-    it('updates the existing channel on handle conflict without overwriting null fields', () => {
+    it('updates the existing channel on handle conflict without overwriting null fields and reuses the stub creator', () => {
         const insertedId = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
@@ -195,7 +222,7 @@ describe('db.service upserts', () => {
         });
 
         const updatedId = upsertChannelInfo({
-            name: 'Alpha Updated',
+            name: 'Alpha',
             handle: '@alpha',
             url: 'https://www.youtube.com/@alpha/videos',
         });
@@ -207,14 +234,38 @@ describe('db.service upserts', () => {
         expect(row).toEqual({
             id: 1,
             youtube_channel_id: 'UC123',
-            name: 'Alpha Updated',
+            name: 'Alpha',
             handle: '@alpha',
             description: 'Alpha description',
             followers: 12,
-            tags: '["news","updates"]',
+            source_tags: '["news","updates"]',
             url: 'https://www.youtube.com/@alpha/videos',
+            creator_id: 1,
         });
         expect(mockDb.prepare('SELECT COUNT(*) AS count FROM channels').get()).toEqual({ count: 1 });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+    });
+
+    it('reuses the existing stub creator when another channel save has the same name', () => {
+        upsertChannelInfo({
+            youtubeChannelId: 'UC123',
+            name: 'Alpha',
+            handle: '@alpha',
+            url: 'https://www.youtube.com/@alpha',
+        });
+
+        const secondId = upsertChannelInfo({
+            youtubeChannelId: 'UC456',
+            name: 'Alpha',
+            handle: '@alpha-two',
+            url: 'https://www.youtube.com/@alpha-two',
+        });
+
+        expect(secondId).toBe(2);
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+        expect(mockDb.prepare('SELECT creator_id FROM channels WHERE handle = ?').get('@alpha-two')).toEqual({
+            creator_id: 1,
+        });
     });
 
     it('rejects channel payloads that miss required fields', () => {
@@ -245,7 +296,6 @@ describe('db.service upserts', () => {
                 viewCount: 101,
                 categories: ['cat'],
                 tags: ['tag'],
-                transcript: '[]',
             },
         ];
 
@@ -266,9 +316,9 @@ describe('db.service upserts', () => {
             upload_date: '20250101',
             view_count: 101,
             categories: '["cat"]',
-            tags: '["tag"]',
-            transcript: '[]',
+            source_tags: '["tag"]',
         });
+        expect(row).not.toHaveProperty('transcript');
     });
 
     it('updates only defined video fields and preserves existing values for undefined inputs', () => {
@@ -290,7 +340,6 @@ describe('db.service upserts', () => {
                 viewCount: 1,
                 categories: ['cat-a'],
                 tags: ['tag-a'],
-                transcript: '["line"]',
             },
         ]);
 
@@ -312,8 +361,7 @@ describe('db.service upserts', () => {
             duration: 10,
             upload_date: '20240101',
             categories: '["cat-a"]',
-            tags: '["tag-a"]',
-            transcript: '["line"]',
+            source_tags: '["tag-a"]',
         });
     });
 

@@ -61,21 +61,23 @@ transcripts (
 
 `transcript_segments` stores the parsed segment rows for each transcript version. See `src/db/schema.sql` for the full transcript schema.
 
-## Known Schema And Repository Drift
+## Current Alignment Notes
 
-Before changing persistence behavior, check the current source and the plan docs together.
+Treat `src/db/schema.sql` as the canonical schema.
 
-Known drift:
+Current alignment:
 
-- `src/db/schema.sql` uses `source_tags`, while some repository SQL still refers to `tags`.
-- The current `channels` schema requires `creator_id`, while channel upsert code does not provide one.
-- Some older database artifacts include legacy tables such as `tags`, `creator_channels`, `creator_tags`, and `channel_tags`.
-- Transcript versioning and segment storage are already present in the current production schema and repository code.
+- Channel and video repositories write `source_tags` JSON arrays, matching `channels.source_tags` and `videos.source_tags`.
+- Channel profile saves create or reuse a stub row in `creators`, then store the resulting `channels.creator_id`.
+- Transcript persistence uses the existing versioned `transcripts` table plus `transcript_segments`.
 
-Runtime impact:
+Legacy artifacts:
+
+- Older seed and migration artifacts under `src/db/seed_old/` still reference retired tables such as `tags`, `creator_channels`, `creator_tags`, and `channel_tags`.
+- Keep those files clearly historical; do not treat them as the current production schema.
+
+Runtime note:
 
 - Repository statements are prepared at module import time.
-- With the checked-in `src/db/db.sqlite`, CLI startup currently fails with `SqliteError: table channels has no column named tags` before yargs can print help.
-- `npm run compile` and `npm test` still pass because they do not exercise that exact runtime import path against the checked-in database in the same way.
-
-Treat `src/db/schema.sql` as the canonical schema target and treat the repository drift as implementation work, not documentation truth.
+- If a local SQLite file drifts from the repository SQL, startup can still fail before yargs prints command help.
+- Run `npm run start -- test-connection` after schema or repository changes to confirm startup reaches diagnostics.

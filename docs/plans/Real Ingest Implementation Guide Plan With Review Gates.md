@@ -7,7 +7,7 @@ This plan follows the completed ingest vocabulary cleanup. At the time this plan
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
   - `docs/plans/Future Transcript Schema TODO.md`
-- The current database schema still has a plain-text `transcripts(video_id, text)` table, so the real transcript implementation must reconcile that with the intended versioned transcript schema.
+- The current database schema already includes versioned `transcripts` plus `transcript_segments`, so the remaining work should build on that model and remove legacy plain-text assumptions from storage wiring and tests.
 - There are root-level sample/data files that may be useful fixtures or stray artifacts; they should be reviewed before deletion.
 - This plan is intentionally written for a human/user-led implementation. The agent should review, explain, and verify only. The agent should not edit code while executing this plan unless explicitly told to abandon that constraint.
 
@@ -68,7 +68,7 @@ Acceptance:
 
 Pause and wait for `continue`.
 
-## Phase 2: Schema and Transcript Repository Design
+## Phase 2: Transcript Repository Alignment
 
 Agent pre-phase review:
 - Review Phase 1 cleanup decisions and any user-made file moves/deletions.
@@ -76,20 +76,18 @@ Agent pre-phase review:
 - Confirm the repo still compiles/tests if applicable.
 
 Agent output:
-- A short schema design note explaining how to replace the current `transcripts(video_id, text)` table.
-- Example SQL for the new documented tables:
-  - `transcripts`: version metadata, raw json3 blob, checksum.
-  - `transcript_segments`: normalized time-coded transcript rows.
-- A repository method sketch for saving transcript versions and segments.
-- A decision note for seed/test migration from any plain-text transcript rows.
+- A short alignment note explaining how the current versioned `transcripts` and `transcript_segments` tables are used by ingest storage.
+- Example repository calls for transcript version lookup, checksum-based deduplication, next-version insert, and segment persistence.
+- A compatibility note listing any remaining plain-text transcript assumptions in tests, docs, or transitional code.
 
 Implementation guidance:
-- Update `src/db/schema.sql` yourself only after the design note is clear.
-- Replace old transcript upsert behavior with version-aware methods.
+- Treat `src/db/schema.sql` as canonical unless a verified mismatch requires a targeted fix.
+- Replace old plain-text transcript assumptions with the existing version-aware repository methods.
 - Keep raw json3 in SQLite; temp files are staging only.
 
 Acceptance:
-- DB/service tests cover transcript version insert, checksum skip, changed checksum next-version insert, and segment persistence.
+- DB/service tests cover transcript version insert, checksum skip, changed checksum next-version insert, and segment persistence on the existing schema.
+- Legacy plain-text transcript assumptions are removed from touched tests/docs.
 - `npm run compile` passes after your implementation.
 
 Pause and wait for `continue`.

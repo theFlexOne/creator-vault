@@ -17,7 +17,7 @@ The intended diagnostic command is:
 npm run start -- test-connection
 ```
 
-At the moment, CLI startup can fail before diagnostics or help text render if the local SQLite schema does not match repository SQL. The checked-in database currently exposes this drift with `table channels has no column named tags`. See `docs/app/database.md`.
+Use `npm run start -- test-connection` as the fastest startup check when validating local SQLite alignment. See `docs/app/database.md`.
 
 ## Install And Run
 
@@ -169,6 +169,6 @@ npm run test:lib
 ## Current Notes
 
 - `ingest-channel-videos` currently ingests video metadata only. It does not yet combine channel profile, video metadata, and transcript ingestion into one workflow.
-- Transcript storage currently uses one `transcripts` row per video with plain text. Versioned json3 transcript storage is planned but not implemented.
-- The checked-in schema and repository SQL still have known drift around tag/transcript columns and channel save requirements. Treat `docs/app/database.md` and the transcript planning docs as the starting point before changing persistence behavior.
-- Because repository SQL is prepared during command import, this drift can currently block even `--help` and `test-connection` against `src/db/db.sqlite`.
+- Transcript storage now uses versioned json3 transcript rows in `transcripts` plus normalized segment rows in `transcript_segments`.
+- Channel and video persistence now align with `source_tags`, and channel profile saves create or reuse a stub Creator keyed by the channel name.
+- Because repository SQL is prepared during command import, any future schema/query drift can still block startup. Use `npm run start -- test-connection` after persistence changes.

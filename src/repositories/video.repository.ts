@@ -13,8 +13,7 @@ const upsertVideo = db.prepare(`
         upload_date,
         view_count,
         categories,
-        tags,
-        transcript
+        source_tags
     )
     VALUES (
         @youtube_video_id,
@@ -26,8 +25,7 @@ const upsertVideo = db.prepare(`
         @upload_date,
         COALESCE(@view_count, 0),
         COALESCE(@categories, '[]'),
-        COALESCE(@tags, '[]'),
-        COALESCE(@transcript, '[]')
+        COALESCE(@source_tags, '[]')
     )
     ON CONFLICT(youtube_video_id) DO UPDATE SET
         channel_id = COALESCE(@channel_id, videos.channel_id),
@@ -38,8 +36,7 @@ const upsertVideo = db.prepare(`
         upload_date = COALESCE(@upload_date, videos.upload_date),
         view_count = COALESCE(@view_count, videos.view_count),
         categories = COALESCE(@categories, videos.categories),
-        tags = COALESCE(@tags, videos.tags),
-        transcript = COALESCE(@transcript, videos.transcript)
+        source_tags = COALESCE(@source_tags, videos.source_tags)
     RETURNING id
 `);
 
@@ -68,8 +65,7 @@ export function upsertVideoInfo(channelId: number, videos: VideoDTO[]): number {
                 upload_date: video.uploadDate ?? null,
                 view_count: video.viewCount ?? null,
                 categories: video.categories !== undefined ? JSON.stringify(video.categories) : null,
-                tags: video.tags !== undefined ? JSON.stringify(video.tags) : null,
-                transcript: video.transcript ?? null,
+                source_tags: video.tags !== undefined ? JSON.stringify(video.tags) : null,
             }) as { id: number } | undefined;
 
             if (!videoResult) {

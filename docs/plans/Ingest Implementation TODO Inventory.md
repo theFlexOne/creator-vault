@@ -1,6 +1,6 @@
 # Ingest Implementation TODO Inventory
 
-This note records the real-ingestion work intentionally left out of the refactor-only rename plan.
+This note records the real-ingestion work still left after the schema/repository alignment pass.
 
 ## Remaining Implementation Work
 
@@ -16,7 +16,7 @@ This note records the real-ingestion work intentionally left out of the refactor
 - Keep `ingest-transcripts` independently runnable for transcript backfills and repairs.
   Current module TODO is `src/ingest/ingest.module.ts:25`. Independent implementation is `src/services/ingestTranscripts.service.ts:9`.
 
-- Implement missing-channel creation with a stub Creator named from the YouTube channel name.
+- Implement missing-channel creation with a stub Creator named from the YouTube channel name inside the ingest storage flow.
   Storage policy/types start at `src/ingest/ingestStorage.ts:3`. Stub creator method is `src/ingest/ingestStorage.ts:63`, with TODO at `src/ingest/ingestStorage.ts:81`. Current skip behavior is `src/services/ingestChannelVideos.service.ts:90`.
 
 - Implement manual English caption selection with automatic English fallback.
@@ -28,11 +28,11 @@ This note records the real-ingestion work intentionally left out of the refactor
 - Implement json3 parser event traversal, text run collapsing, timing, empty event filtering, and checksum behavior.
   Parser skeleton is `src/transcripts/json3Parser.ts:27`. Exact parser TODO diagnostic is `src/transcripts/json3Parser.ts:36`.
 
-- Add transcript schema migration for `transcripts` versions and `transcript_segments`.
-  Intended tables are documented at `docs/plans/Future Transcript Schema TODO.md:7`. Storage stub references future tables at `src/ingest/ingestStorage.ts:95` and `src/ingest/ingestStorage.ts:105`.
-
-- Persist transcript versions, raw json3 payloads, checksums, and normalized segments.
+- Persist transcript versions, raw json3 payloads, checksums, and normalized segments through `IngestStorage`.
   Version input/record types are `src/ingest/ingestStorage.ts:33` and `src/ingest/ingestStorage.ts:43`. Segment type is `src/ingest/ingestStorage.ts:52`. Save methods are `src/ingest/ingestStorage.ts:70` and `src/ingest/ingestStorage.ts:71`.
+
+- Remove remaining compatibility cleanup around legacy repository assumptions after the real source and storage adapters replace transitional wiring.
+  Current alignment note is `docs/app/database.md`. Transitional repository assumptions were fixed in the repository layer, but storage/orchestration follow-up still remains.
 
 - Remove remaining compatibility TODOs after the real source and storage adapters replace transitional wiring.
   Current delegation is `src/ingest/ingest.module.ts:13`. Default wiring still uses it at `src/ingest/index.ts:44`.

@@ -12,7 +12,7 @@ After `npm run build` and `npm link`, run:
 et <command>
 ```
 
-Current runtime note: command imports prepare repository SQL during startup. If `src/db/db.sqlite` does not match the repository queries, even `--help` can fail before yargs prints command help. The checked-in database currently exposes this as `table channels has no column named tags`; see `docs/app/database.md`.
+Current runtime note: command imports prepare repository SQL during startup. If `src/db/db.sqlite` drifts from the repository queries, even `--help` can fail before yargs prints command help. Run `npm run start -- test-connection` after persistence changes; see `docs/app/database.md`.
 
 ## Shared Input Behavior
 
