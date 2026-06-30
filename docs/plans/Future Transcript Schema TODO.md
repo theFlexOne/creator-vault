@@ -42,10 +42,9 @@ transcript_segments (
 
 ## Remaining Follow-Up
 
-- Use the implemented json3 parser output when wiring ingest storage and orchestration.
-- Wire `src/ingest/ingestStorage.ts` to the existing transcript repository methods instead of treating transcript persistence as future work.
-- Keep `ingest-transcripts` independently runnable for backfills and repairs against the existing `transcripts` table.
-- Remove any remaining plain-text transcript compatibility assumptions from transitional services and tests.
+- Finalize CLI/report fields for transcript versions, skipped rows, parser diagnostics, and failures.
+- Keep `ingest-transcripts` independently runnable for backfills and repairs against the existing `transcripts` table as Phase 8 finalizes user-facing behavior.
+- Remove any remaining plain-text transcript compatibility assumptions from legacy services and tests during final cleanup.
 
 ## Implementation Pointers
 

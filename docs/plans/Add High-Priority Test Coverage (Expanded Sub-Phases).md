@@ -7,7 +7,7 @@
 **Execution Workflow**
 - **Incremental Verification**: Run targeted tests after each phase, then `npm test` and `npm run compile` at the end.
 - **Current-State Only**: Cover shipped behavior and compatibility seams that still exist in production code.
-- **Out of Scope**: Do not add tests for future ingest orchestration, transcript versioning, source adapters, or storage adapters beyond current stubs.
+- **Out of Scope**: Do not broaden this coverage plan into the real-ingest orchestration, transcript versioning, source adapter, or storage adapter work covered by the active ingest plan.
 
 ---
 

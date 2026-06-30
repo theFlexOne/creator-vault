@@ -17,8 +17,9 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 - Command registry: `src/commands/index.ts`.
 - Public ingest module: `src/ingest/index.ts`.
 - Ingest implementation: `src/ingest/`.
-- Workflow services: `src/services/ingestChannelProfile.service.ts`, `src/services/ingestChannelVideos.service.ts`, and `src/services/ingestTranscripts.service.ts`.
-- YouTube helpers: `src/lib/youtube/`.
+- Ingest source adapter: `src/ingest/youtubeSource.ts`.
+- Workflow services: legacy implementations under `src/services/` retained until final cleanup.
+- YouTube helpers: lower-level helpers under `src/lib/youtube/`.
 - SQLite connection: `src/lib/sqlite/db.ts`.
 - Persistence repositories: `src/repositories/`.
 
@@ -30,8 +31,9 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 2. yargs parses command arguments and options.
 3. Command handlers call `src/ingest` functions or diagnostic services.
 4. Ingest workflows resolve identifiers from direct args or one input file.
-5. YouTube helpers retrieve channel, video, or transcript data.
-6. Repositories write to SQLite only when `--save` is enabled.
+5. The ingest source adapter retrieves channel profiles, paged video metadata, and json3 captions.
+6. The ingest module parses json3 captions and calls ingest storage.
+7. Ingest storage calls repositories; write methods run only when `--save` is enabled.
 
 ## What To Read First
 
@@ -40,4 +42,4 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 3. `docs/app/ingest-workflows.md` for the current ingest architecture.
 4. `docs/app/database.md` before changing persistence code.
 5. `docs/plans/plan-status.md` to see which plan is currently active and which plans are in progress.
-6. `docs/plans/Ingest Implementation TODO Inventory.md` before starting future ingest implementation work.
+6. `docs/plans/Ingest Implementation TODO Inventory.md` before starting ingest follow-up work.

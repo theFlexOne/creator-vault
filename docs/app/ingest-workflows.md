@@ -4,8 +4,8 @@ The public workflow vocabulary is `ingest`. The boundary is explicit:
 
 - `src/commands/*` expose yargs commands.
 - `src/ingest/index.ts` exports the public ingest functions used by commands.
-- `src/ingest/ingest.module.ts` defines the ingest module boundary.
-- `src/services/*` contain the current working workflow implementations.
+- `src/ingest/ingest.module.ts` orchestrates ingest workflows through source, storage, parser, temp-directory, and reporter dependencies.
+- `src/services/*` contain legacy workflow implementations retained until final cleanup.
 
 ## Current Pipeline
 
@@ -13,31 +13,30 @@ The current app uses a three-step YouTube pipeline.
 
 ### 1. Channel Profile
 
-`ingest-channel-profile` resolves input identifiers and retrieves channel profile data with `getChannelInfo`.
+`ingest-channel-profile` resolves input identifiers and retrieves channel profile data through `YoutubeSource`.
 
-With `--save`, it calls `upsertChannelInfo`. Without `--save`, it logs retrieved data. When saving, the creator repository creates or reuses a stub Creator keyed by the channel name, and the channel repository stores the channel with that `creator_id`.
+With `--save`, ingest storage creates or reuses the stub Creator keyed by the YouTube channel name, then saves or reuses the YouTube channel with that `creator_id`. Without `--save`, channel data is logged and no storage write is made.
 
 ### 2. Channel Videos
 
-`ingest-channel-videos` resolves input identifiers, retrieves channel info, discovers video URLs, retrieves video metadata in batches, and optionally stores videos.
+`ingest-channel-videos` resolves input identifiers, retrieves channel profile data, retrieves `/videos` metadata pages in batches, and optionally stores videos plus json3 transcript versions and segments.
 
-With `--save`, the command expects the channel to already exist in SQLite. Missing channels are skipped and counted as failures. The current implementation does not create a missing creator/channel automatically.
+With `--save`, ingest storage creates or reuses the creator-backed YouTube channel, saves retrieved videos, downloads preferred English json3 captions, parses them, and saves transcript versions plus normalized segments. Without `--save`, it retrieves profile and video metadata but does not write to SQLite or download captions.
 
 ### 3. Transcripts
 
-`ingest-transcripts` resolves input identifiers, looks up each channel in SQLite, selects videos without transcript rows, retrieves transcripts, and optionally stores them.
+`ingest-transcripts` resolves input identifiers, looks up each existing channel through ingest storage, selects stored videos without transcript rows, downloads preferred English json3 captions, parses them, and optionally stores transcript versions plus normalized segments.
 
-This command remains independently runnable for backfills and repairs.
+This command remains independently runnable for backfills and repairs. It does not fetch channel profile data or video metadata.
 
 ## Current Notes
 
-- The ingest module is still transitional, but the public command surface already uses `ingest` names.
-- The legacy channel profile workflow still calls `upsertChannelInfo`; future ingest orchestration should use `IngestStorage.findOrCreateYoutubeChannel` instead.
-- `ingest-channel-videos` does not yet ingest channel profile data, video metadata, and transcripts in one workflow.
-- The legacy `ingest-channel-videos` workflow still skips missing channels. The production ingest storage adapter now supports both safe missing-channel skips and future `createChannel: true` channel creation through the creator repository.
+- The ingest module now owns direct orchestration for the public ingest commands.
+- Legacy service-level workflows remain in `src/services/*` until the final cleanup phase.
+- `ingest-channel-videos` now ingests channel profile data, video metadata, and json3 transcripts in one workflow when `--save` is enabled.
 - Transcript ingestion now stores versioned json3 transcript blobs in `transcripts` and parsed rows in `transcript_segments`.
 - `src/repositories/transcript.repository.ts` handles transcript version lookup, deduplication, and segment storage.
-- `src/ingest/ingestStorage.ts` maps future ingest orchestration to the creator, channel, video, and transcript repositories while keeping DB access out of core orchestration.
+- `src/ingest/ingestStorage.ts` maps ingest orchestration to the creator, channel, video, and transcript repositories while keeping DB access out of core orchestration.
 
 ## Planning Boundary
 

@@ -3,8 +3,8 @@
 This plan follows the completed ingest vocabulary cleanup. At the time this plan was written:
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
-- The ingest module still needs real orchestration in place of transitional wiring.
-- Phases 1-6.1 have been implemented and verified; the next active phase is Phase 7 ingest orchestration instructions.
+- The ingest module now has direct source/storage/parser orchestration; Phase 8 still needs CLI and report finalization.
+- Phases 1-7 have been implemented and verified; the next active phase is Phase 8 CLI and report finalization instructions.
 - The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
@@ -228,7 +228,7 @@ Implementation guidance:
 - Change `VideoNeedingTranscript` so it includes both the internal video ID and the external YouTube video ID.
 - Update `getVideosMissingTranscripts` and `IngestStorage.findVideosMissingTranscripts` to return both IDs.
 - Keep orchestration responsible for workflow order only; it should not query repositories directly.
-- Ensure future ingest orchestration uses `storage.findOrCreateYoutubeChannel(..., { createChannel: true })` instead of legacy `upsertChannelInfo`.
+- Ensure Phase 7 ingest orchestration uses `storage.findOrCreateYoutubeChannel(..., { createChannel: true })` instead of legacy `upsertChannelInfo`.
 - Either remove `upsertChannelInfo` when no callers remain, or clearly treat it as legacy compatibility until Phase 9 cleanup.
 - Follow `docs/agents/docs-update-checklist.md`; keep current-state docs aligned with the transcript-backfill storage contract.
 

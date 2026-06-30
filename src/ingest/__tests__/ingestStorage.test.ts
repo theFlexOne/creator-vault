@@ -184,7 +184,13 @@ describe('createProductionIngestStorage', () => {
         await expect(storage.saveVideos(channel!.channelId, [
             { youtubeVideoId: 'vid-1', title: 'One', url: 'https://youtube.com/watch?v=vid-1' },
             { youtubeVideoId: 'vid-2', title: 'Two', url: 'https://youtube.com/watch?v=vid-2' },
-        ])).resolves.toEqual({ savedCount: 2 });
+        ])).resolves.toEqual({
+            savedCount: 2,
+            videos: [
+                { id: 1, youtubeVideoId: 'vid-1' },
+                { id: 2, youtubeVideoId: 'vid-2' },
+            ],
+        });
 
         await storage.saveTranscriptVersion({
             videoId: 1,

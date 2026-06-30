@@ -1,6 +1,5 @@
 import { createIngestModule } from './ingest.module';
 import { createDefaultFutureIngestDependencies } from './ingest.dependencies';
-import { createLegacyWorkflowIngestAdapter } from './legacyWorkflow.adapter';
 
 export type {
     IngestChannelProfileOptions,
@@ -30,6 +29,7 @@ export type {
     SaveVideosResult,
     StoredChannel,
     StoredCreator,
+    StoredVideo,
     StubCreatorInput,
     TranscriptSegmentInput,
     TranscriptVersionRecord,
@@ -37,13 +37,11 @@ export type {
 } from './ingestStorage';
 export { createIngestModule } from './ingest.module';
 export { createDefaultFutureIngestDependencies } from './ingest.dependencies';
-export { createLegacyWorkflowIngestAdapter } from './legacyWorkflow.adapter';
 export { createProductionYoutubeSource, createProductionYoutubeSourceStub } from './youtubeSource';
 export { createProductionIngestStorage, createProductionIngestStorageStub } from './ingestStorage';
 
 const defaultIngestModule = createIngestModule({
     ...createDefaultFutureIngestDependencies(),
-    legacyWorkflowAdapter: createLegacyWorkflowIngestAdapter(),
 });
 
 export function runIngestChannelProfile(inputs: string[], save: boolean) {

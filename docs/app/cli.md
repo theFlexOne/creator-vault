@@ -45,7 +45,7 @@ Without `--save`, channel data is logged but not persisted.
 
 ## `ingest-channel-videos <inputs..>`
 
-Fetches video metadata for each channel identifier.
+Fetches video metadata for each channel identifier. With `--save`, it also downloads preferred English json3 captions, parses them, and stores transcript versions and segments.
 
 Examples:
 
@@ -58,12 +58,12 @@ npm run start -- ingest-channel-videos channels.txt --limit 100 --batch 20 --sav
 Options:
 
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
-- `--batch <number>`: number of video URLs to retrieve metadata for per batch. Default: `20`.
+- `--batch <number>`: `/videos` metadata page size. Default: `20`.
 - `--save`, `-s`: save video metadata to SQLite. Default: `false`.
 
 `--limit` and `--batch` must be greater than zero.
 
-When `--save` is enabled, the command looks up the channel in SQLite by YouTube channel ID or handle. If the channel does not exist, that channel is skipped and reported as failed.
+When `--save` is enabled, the command creates or reuses a creator-backed YouTube channel, saves video metadata, and stores new transcript versions plus segments for downloaded json3 captions. Without `--save`, it retrieves channel profile and video metadata but does not write to SQLite or download captions.
 
 ## `ingest-transcripts <inputs..>`
 
@@ -82,7 +82,7 @@ Options:
 - `--limit <number>`: maximum transcripts to ingest per channel. Default: `10`.
 - `--save`, `-s`: save transcripts to SQLite. Default: `false`.
 
-The command looks up the channel in SQLite, selects stored videos missing transcript rows, retrieves transcripts, and stores them only when `--save` is enabled.
+The command looks up the channel in SQLite, selects stored videos missing transcript rows, downloads preferred English json3 captions, parses them, and stores transcript versions plus segments only when `--save` is enabled. It does not retrieve channel profile data or video metadata again.
 
 ## `test-connection`
 

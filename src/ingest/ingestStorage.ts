@@ -35,8 +35,14 @@ export type StoredChannel = {
     handle?: string;
 };
 
+export type StoredVideo = {
+    id: number;
+    youtubeVideoId: string;
+};
+
 export type SaveVideosResult = {
     savedCount: number;
+    videos: StoredVideo[];
 };
 
 export type LatestTranscriptVersionQuery = {
@@ -164,8 +170,19 @@ export function createProductionIngestStorage(): IngestStorage {
         },
 
         async saveVideos(channelId, videos) {
+            const savedCount = upsertVideoInfo(channelId, videos);
+
             return {
-                savedCount: upsertVideoInfo(channelId, videos),
+                savedCount,
+                videos: videos
+                    .filter((video): video is VideoRecord & StoredVideo => (
+                        typeof video.id === 'number'
+                        && typeof video.youtubeVideoId === 'string'
+                    ))
+                    .map((video) => ({
+                        id: video.id,
+                        youtubeVideoId: video.youtubeVideoId,
+                    })),
             };
         },
 

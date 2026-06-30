@@ -56,8 +56,8 @@ et <command>
 The ingest workflow currently runs as a three-step pipeline:
 
 1. Ingest channel profile data.
-2. Ingest video metadata for channels that already exist in the database.
-3. Ingest transcripts for stored videos missing transcripts.
+2. Ingest channel video metadata and, when saving, json3 transcript versions and segments.
+3. Backfill transcripts for stored videos missing transcript rows.
 
 Each ingest command runs in dry-run style by default. Add `--save` to persist results to SQLite.
 
@@ -80,7 +80,7 @@ Options:
 
 ### `ingest-channel-videos <inputs..>`
 
-Fetches video metadata for channel identifiers.
+Fetches video metadata for channel identifiers. With `--save`, it also downloads preferred English json3 captions, parses them, and stores transcript versions and segments.
 
 ```sh
 npm run start -- ingest-channel-videos @example --limit 25
@@ -90,10 +90,10 @@ npm run start -- ingest-channel-videos channels.txt --limit 100 --batch 20 --sav
 Options:
 
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
-- `--batch <number>`: video metadata batch size. Default: `20`.
-- `--save`, `-s`: persist video metadata.
+- `--batch <number>`: `/videos` metadata page size. Default: `20`.
+- `--save`, `-s`: persist video metadata and available json3 transcripts.
 
-When saving, the command expects the channel to already exist in the database.
+When saving, the command creates or reuses a creator-backed YouTube channel before storing video and transcript data.
 
 ### `ingest-transcripts <inputs..>`
 
@@ -109,7 +109,7 @@ Options:
 - `--limit <number>`: maximum transcripts to ingest per channel. Default: `10`.
 - `--save`, `-s`: persist transcripts.
 
-When saving or selecting videos, the command expects the channel and video metadata to already exist in the database.
+When selecting videos, the command expects the channel and video metadata to already exist in the database.
 
 ### `test-connection`
 
@@ -168,7 +168,7 @@ npm run test:lib
 
 ## Current Notes
 
-- `ingest-channel-videos` currently ingests video metadata only. It does not yet combine channel profile, video metadata, and transcript ingestion into one workflow.
+- `ingest-channel-videos` now combines channel profile, paged video metadata, and json3 transcript ingestion when `--save` is enabled.
 - Transcript storage now uses versioned json3 transcript rows in `transcripts` plus normalized segment rows in `transcript_segments`.
 - Channel and video persistence now align with `source_tags`, and channel profile saves use the creator repository to create or reuse a stub Creator keyed by the channel name.
 - Because repository SQL is prepared during command import, any future schema/query drift can still block startup. Use `npm run start -- test-connection` after persistence changes.
