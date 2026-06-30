@@ -90,6 +90,7 @@ jest.mock('../../shared/logger', () => ({
 
 import { getVideosMissingTranscripts, upsertVideoInfo } from '../../repositories/video.repository';
 import { upsertChannelInfo } from '../../repositories/channel.repository';
+import { findOrCreateCreatorByName } from '../../repositories/creator.repository';
 import {
     findLatestTranscriptVersion,
     saveTranscriptSegments,
@@ -175,7 +176,35 @@ describe('db.service upserts', () => {
         mockDb.close();
     });
 
-    it('inserts a new channel, creates a stub creator, and returns its id', () => {
+    it('creates a creator by name and returns its id', () => {
+        const creator = findOrCreateCreatorByName('Alpha');
+
+        expect(creator).toEqual({
+            id: 1,
+            name: 'Alpha',
+        });
+        expect(mockDb.prepare('SELECT * FROM creators').get()).toEqual({
+            id: 1,
+            name: 'Alpha',
+            description: null,
+            occupation: null,
+            education: null,
+        } satisfies CreatorRow);
+    });
+
+    it('reuses an existing creator by name', () => {
+        const first = findOrCreateCreatorByName('Alpha');
+        const second = findOrCreateCreatorByName('Alpha');
+
+        expect(second).toEqual(first);
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+    });
+
+    it('rejects missing creator names', () => {
+        expect(() => findOrCreateCreatorByName('   ')).toThrow('Cannot create or reuse creator without name.');
+    });
+
+    it('inserts a new channel, populates creator_id, and returns its id', () => {
         const id = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
@@ -200,17 +229,11 @@ describe('db.service upserts', () => {
             url: 'https://www.youtube.com/@alpha',
             creator_id: 1,
         });
-        expect(mockDb.prepare('SELECT * FROM creators').get()).toEqual({
-            id: 1,
-            name: 'Alpha',
-            description: null,
-            occupation: null,
-            education: null,
-        } satisfies CreatorRow);
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
         expect(mockLoggerInfo).toHaveBeenCalledWith('Channel "Alpha" (ID: 1) upserted.');
     });
 
-    it('updates the existing channel on handle conflict without overwriting null fields and reuses the stub creator', () => {
+    it('updates the existing channel on handle conflict without overwriting null fields', () => {
         const insertedId = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
@@ -246,7 +269,7 @@ describe('db.service upserts', () => {
         expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
     });
 
-    it('reuses the existing stub creator when another channel save has the same name', () => {
+    it('uses the existing creator when another channel save has the same name', () => {
         upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',

@@ -170,5 +170,5 @@ npm run test:lib
 
 - `ingest-channel-videos` currently ingests video metadata only. It does not yet combine channel profile, video metadata, and transcript ingestion into one workflow.
 - Transcript storage now uses versioned json3 transcript rows in `transcripts` plus normalized segment rows in `transcript_segments`.
-- Channel and video persistence now align with `source_tags`, and channel profile saves create or reuse a stub Creator keyed by the channel name.
+- Channel and video persistence now align with `source_tags`, and channel profile saves use the creator repository to create or reuse a stub Creator keyed by the channel name.
 - Because repository SQL is prepared during command import, any future schema/query drift can still block startup. Use `npm run start -- test-connection` after persistence changes.

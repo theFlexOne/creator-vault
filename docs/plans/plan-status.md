@@ -21,7 +21,7 @@ Status vocabulary:
 
 | Plan | Status | Current phase | Next step | Last updated |
 | --- | --- | --- | --- | --- |
-| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `active` | `5` | Resume at Phase 5 creator repository extraction, then review before Phase 6 storage adapter wiring. | `2026-06-28` |
+| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `active` | `6` | Review Phase 5 creator repository extraction, then start Phase 6 storage adapter wiring. | `2026-06-30` |
 | [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `in-progress` | `1` | Start Phase 1 by adding `normalizeYoutubeUrl` branch coverage after the active plan changes status. | `2026-06-28` |
 
 ## Update Rules

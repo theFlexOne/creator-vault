@@ -1,14 +1,7 @@
 import db from '../lib/sqlite/db';
 import { logger } from '../shared/logger';
 import type { ChannelDTO } from '../domain/channel/channel.types';
-
-const upsertCreator = db.prepare(`
-    INSERT INTO creators (name)
-    VALUES (@name)
-    ON CONFLICT(name) DO UPDATE SET
-        name = excluded.name
-    RETURNING id
-`);
+import { findOrCreateCreatorByName } from './creator.repository';
 
 const findChannel = db.prepare(`
     SELECT id
@@ -63,11 +56,7 @@ export function upsertChannelInfo(data: ChannelDTO): number {
     }
 
     const youtubeChannelId = data.youtubeChannelId ?? data.ytChannelId ?? null;
-    const creatorResult = upsertCreator.get({ name: data.name }) as { id: number } | undefined;
-
-    if (!creatorResult) {
-        throw new Error(`Failed to create or reuse creator "${data.name}".`);
-    }
+    const creator = findOrCreateCreatorByName(data.name);
 
     const existingChannel = findChannel.get({
         handle: data.handle,
@@ -83,7 +72,7 @@ export function upsertChannelInfo(data: ChannelDTO): number {
         followers: data.followers ?? null,
         source_tags: data.tags !== undefined ? JSON.stringify(data.tags) : null,
         url: data.url,
-        creator_id: creatorResult.id,
+        creator_id: creator.id,
     }) as { id: number } | undefined;
 
     if (!channelResult) {

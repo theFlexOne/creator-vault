@@ -68,7 +68,7 @@ Treat `src/db/schema.sql` as the canonical schema.
 Current alignment:
 
 - Channel and video repositories write `source_tags` JSON arrays, matching `channels.source_tags` and `videos.source_tags`.
-- Channel profile saves create or reuse a stub row in `creators`, then store the resulting `channels.creator_id`.
+- The creator repository creates or reuses stub rows in `creators`; channel profile saves store the resulting `channels.creator_id`.
 - Transcript persistence uses the existing versioned `transcripts` table plus `transcript_segments`.
 
 Legacy artifacts:

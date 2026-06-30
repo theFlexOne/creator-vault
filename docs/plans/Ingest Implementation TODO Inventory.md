@@ -41,3 +41,8 @@ This note records the real-ingestion work still left after the schema/repository
 
 - Remove remaining compatibility TODOs after the real source and storage adapters replace transitional wiring.
   Current delegation is `src/ingest/ingest.module.ts:13`. Default wiring still uses it at `src/ingest/index.ts:44`.
+
+## Post-Plan Follow-Up
+
+- Revisit whether Creator should become a fuller user-facing domain workflow after the real ingest plan completes.
+  Possible scope includes dedicated creator commands, listing creators, creating creators outside YouTube ingest, editing creator metadata, and linking channels to existing creators instead of always creating/reusing a stub Creator from the YouTube channel name.
