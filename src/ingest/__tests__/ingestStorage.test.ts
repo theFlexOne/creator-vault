@@ -195,7 +195,9 @@ describe('createProductionIngestStorage', () => {
             checksum: 'checksum-one',
         });
 
-        await expect(storage.findVideosMissingTranscripts(channel!.channelId)).resolves.toEqual([{ id: 2 }]);
+        await expect(storage.findVideosMissingTranscripts(channel!.channelId)).resolves.toEqual([
+            { id: 2, youtubeVideoId: 'vid-2' },
+        ]);
     });
 
     it('skips unchanged transcript versions and stores changed versions with segments', async () => {

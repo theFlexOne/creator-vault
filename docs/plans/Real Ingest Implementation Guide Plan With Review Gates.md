@@ -4,7 +4,7 @@ This plan follows the completed ingest vocabulary cleanup. At the time this plan
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
 - The ingest module still needs real orchestration in place of transitional wiring.
-- Phases 1-6 have been implemented and verified; the next active phase is Phase 7 ingest orchestration instructions.
+- Phases 1-6.1 have been implemented and verified; the next active phase is Phase 7 ingest orchestration instructions.
 - The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
@@ -211,12 +211,42 @@ Acceptance:
 
 Pause and wait for `continue`.
 
-## Phase 7: Ingest Orchestration Instructions
+## Phase 6.1: Storage Contract Tightening
 
 Agent pre-phase review:
 - Review your Phase 6 storage adapter implementation.
+- Confirm `IngestStorage` is the only DB-facing interface planned for Phase 7 orchestration.
+- Inspect transcript-backfill data flow and confirm orchestration has enough data to download captions without DB imports.
+- Inspect legacy channel profile save wiring and decide whether it remains transitional compatibility or must be removed before Phase 7.
+
+Agent output:
+- A storage contract note for transcript backfill.
+- A compatibility note for legacy `upsertChannelInfo`.
+- Fake-driven test examples showing Phase 7 orchestration can use storage without reaching into repositories.
+
+Implementation guidance:
+- Change `VideoNeedingTranscript` so it includes both the internal video ID and the external YouTube video ID.
+- Update `getVideosMissingTranscripts` and `IngestStorage.findVideosMissingTranscripts` to return both IDs.
+- Keep orchestration responsible for workflow order only; it should not query repositories directly.
+- Ensure future ingest orchestration uses `storage.findOrCreateYoutubeChannel(..., { createChannel: true })` instead of legacy `upsertChannelInfo`.
+- Either remove `upsertChannelInfo` when no callers remain, or clearly treat it as legacy compatibility until Phase 9 cleanup.
+- Follow `docs/agents/docs-update-checklist.md`; keep current-state docs aligned with the transcript-backfill storage contract.
+
+Acceptance:
+- Storage tests prove transcript backfill returns internal video ID plus YouTube video ID.
+- No direct DB/repository imports are needed in `src/ingest/ingest.module.ts`.
+- Legacy profile-save compatibility is either removed or explicitly isolated from new orchestration.
+- `npm test -- src/ingest` passes after your implementation.
+- `npm run compile` passes after your implementation.
+
+Pause and wait for `continue`.
+
+## Phase 7: Ingest Orchestration Instructions
+
+Agent pre-phase review:
+- Review your Phase 6.1 storage contract implementation.
 - Confirm core ingest logic still has no direct DB imports.
-- Confirm storage tests prove missing-channel and transcript-version behavior.
+- Confirm storage tests prove missing-channel, transcript-version, and transcript-backfill identity behavior.
 
 Agent output:
 - Numbered flow examples for each command.

@@ -71,6 +71,7 @@ Current alignment:
 - The creator repository creates or reuses stub rows in `creators`; channel profile saves store the resulting `channels.creator_id`.
 - Transcript persistence uses the existing versioned `transcripts` table plus `transcript_segments`.
 - The production ingest storage adapter uses repository methods for creator-backed channel saves, video saves, transcript version lookup/save, segment saves, and transcript-backfill video selection.
+- Transcript-backfill video selection returns both the internal video ID and YouTube video ID so orchestration can store transcript rows by database ID while retrieving captions by YouTube identity.
 
 Legacy artifacts:
 

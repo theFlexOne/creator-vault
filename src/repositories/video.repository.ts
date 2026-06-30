@@ -85,9 +85,17 @@ export function upsertVideoInfo(channelId: number, videos: VideoDTO[]): number {
     return insertedCount;
 }
 
-export function getVideosMissingTranscripts(channelInternalId: number, limit?: number): { id: number }[] {
+export type VideoMissingTranscriptRow = {
+    id: number;
+    youtubeVideoId: string;
+};
+
+export function getVideosMissingTranscripts(channelInternalId: number, limit?: number): VideoMissingTranscriptRow[] {
     let query = `
-        SELECT id FROM videos 
+        SELECT
+            id,
+            youtube_video_id AS youtubeVideoId
+        FROM videos
         WHERE channel_id = ? AND id NOT IN (SELECT DISTINCT video_id FROM transcripts)
     `;
     const params: (string | number)[] = [channelInternalId];
@@ -97,5 +105,5 @@ export function getVideosMissingTranscripts(channelInternalId: number, limit?: n
         params.push(limit);
     }
     const stmt = db.prepare(query);
-    return stmt.all(...params) as { id: number }[];
+    return stmt.all(...params) as VideoMissingTranscriptRow[];
 }

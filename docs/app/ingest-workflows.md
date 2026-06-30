@@ -32,6 +32,7 @@ This command remains independently runnable for backfills and repairs.
 ## Current Notes
 
 - The ingest module is still transitional, but the public command surface already uses `ingest` names.
+- The legacy channel profile workflow still calls `upsertChannelInfo`; future ingest orchestration should use `IngestStorage.findOrCreateYoutubeChannel` instead.
 - `ingest-channel-videos` does not yet ingest channel profile data, video metadata, and transcripts in one workflow.
 - The legacy `ingest-channel-videos` workflow still skips missing channels. The production ingest storage adapter now supports both safe missing-channel skips and future `createChannel: true` channel creation through the creator repository.
 - Transcript ingestion now stores versioned json3 transcript blobs in `transcripts` and parsed rows in `transcript_segments`.

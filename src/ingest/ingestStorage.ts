@@ -82,6 +82,7 @@ export type TranscriptSegmentInput = {
 
 export type VideoNeedingTranscript = {
     id: number;
+    youtubeVideoId: string;
 };
 
 export interface IngestStorage {

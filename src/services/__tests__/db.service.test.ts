@@ -413,7 +413,7 @@ describe('db.service upserts', () => {
         expect(mockLoggerWarn).toHaveBeenCalledWith('Skipping video upsert with missing youtubeVideoId for channel ID: 1');
     });
 
-    it('returns numeric ids for videos missing transcripts', () => {
+    it('returns internal and YouTube ids for videos missing transcripts', () => {
         const channelId = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
@@ -445,8 +445,9 @@ describe('db.service upserts', () => {
         });
 
         const missing = getVideosMissingTranscripts(channelId);
-        expect(missing).toEqual([{ id: 2 }]);
+        expect(missing).toEqual([{ id: 2, youtubeVideoId: 'vid-2' }]);
         expect(typeof missing[0]!.id).toBe('number');
+        expect(typeof missing[0]!.youtubeVideoId).toBe('string');
     });
 
     it('inserts the first transcript version for a video caption source and language', () => {
