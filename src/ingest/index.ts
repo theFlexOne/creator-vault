@@ -25,6 +25,7 @@ export type {
     IngestStorage,
     LatestTranscriptVersionQuery,
     MissingChannelPolicy,
+    SaveTranscriptVersionResult,
     SaveTranscriptVersionInput,
     SaveVideosResult,
     StoredChannel,
@@ -32,12 +33,13 @@ export type {
     StubCreatorInput,
     TranscriptSegmentInput,
     TranscriptVersionRecord,
+    VideoNeedingTranscript,
 } from './ingestStorage';
 export { createIngestModule } from './ingest.module';
 export { createDefaultFutureIngestDependencies } from './ingest.dependencies';
 export { createLegacyWorkflowIngestAdapter } from './legacyWorkflow.adapter';
 export { createProductionYoutubeSource, createProductionYoutubeSourceStub } from './youtubeSource';
-export { createProductionIngestStorageStub } from './ingestStorage';
+export { createProductionIngestStorage, createProductionIngestStorageStub } from './ingestStorage';
 
 const defaultIngestModule = createIngestModule({
     ...createDefaultFutureIngestDependencies(),

@@ -298,6 +298,13 @@ describe('db.service upserts', () => {
                 url: 'https://www.youtube.com/@alpha',
             } as any),
         ).toThrow('Cannot upsert channel without name, handle, and url.');
+
+        expect(() =>
+            upsertChannelInfo({
+                name: 'Alpha',
+            } as any),
+        ).toThrow('Cannot upsert channel without name, handle, and url.');
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 0 });
     });
 
     it('upserts videos by youtube_video_id and assigns database id', () => {

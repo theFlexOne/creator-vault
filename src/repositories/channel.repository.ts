@@ -3,10 +3,19 @@ import { logger } from '../shared/logger';
 import type { ChannelDTO } from '../domain/channel/channel.types';
 import { findOrCreateCreatorByName } from './creator.repository';
 
+export type StoredChannelRecord = {
+    id: number;
+    youtubeChannelId: string;
+    handle: string;
+};
+
 const findChannel = db.prepare(`
-    SELECT id
+    SELECT
+        id,
+        youtube_channel_id AS youtubeChannelId,
+        handle
     FROM channels
-    WHERE handle = @handle
+    WHERE (@handle IS NOT NULL AND handle = @handle)
         OR (@youtube_channel_id IS NOT NULL AND youtube_channel_id = @youtube_channel_id)
     LIMIT 1
 `);
@@ -50,18 +59,31 @@ const updateChannel = db.prepare(`
     RETURNING id
 `);
 
-export function upsertChannelInfo(data: ChannelDTO): number {
+function getYoutubeChannelId(data: ChannelDTO): string | null {
+    return data.youtubeChannelId ?? data.ytChannelId ?? null;
+}
+
+function findChannelByIdentity(data: ChannelDTO): StoredChannelRecord | undefined {
+    return findChannel.get({
+        handle: data.handle ?? null,
+        youtube_channel_id: getYoutubeChannelId(data),
+    }) as StoredChannelRecord | undefined;
+}
+
+export function findYoutubeChannelByIdentity(data: ChannelDTO): StoredChannelRecord | undefined {
+    return findChannelByIdentity(data);
+}
+
+export function upsertYoutubeChannelForCreator(data: ChannelDTO, creatorId: number): number {
     if (!data.name || !data.handle || !data.url) {
         throw new Error('Cannot upsert channel without name, handle, and url.');
     }
 
-    const youtubeChannelId = data.youtubeChannelId ?? data.ytChannelId ?? null;
-    const creator = findOrCreateCreatorByName(data.name);
-
-    const existingChannel = findChannel.get({
-        handle: data.handle,
-        youtube_channel_id: youtubeChannelId,
-    }) as { id: number } | undefined;
+    const youtubeChannelId = getYoutubeChannelId(data);
+    const existingChannel = findChannelByIdentity(data);
+    if (!existingChannel && !youtubeChannelId) {
+        throw new Error('Cannot insert channel without youtubeChannelId.');
+    }
 
     const channelResult = (existingChannel ? updateChannel : insertChannel).get({
         id: existingChannel?.id,
@@ -72,7 +94,7 @@ export function upsertChannelInfo(data: ChannelDTO): number {
         followers: data.followers ?? null,
         source_tags: data.tags !== undefined ? JSON.stringify(data.tags) : null,
         url: data.url,
-        creator_id: creator.id,
+        creator_id: creatorId,
     }) as { id: number } | undefined;
 
     if (!channelResult) {
@@ -81,6 +103,15 @@ export function upsertChannelInfo(data: ChannelDTO): number {
 
     logger.info(`Channel "${data.name}" (ID: ${channelResult.id}) upserted.`);
     return channelResult.id;
+}
+
+export function upsertChannelInfo(data: ChannelDTO): number {
+    if (!data.name || !data.handle || !data.url) {
+        throw new Error('Cannot upsert channel without name, handle, and url.');
+    }
+
+    const creator = findOrCreateCreatorByName(data.name);
+    return upsertYoutubeChannelForCreator(data, creator.id);
 }
 
 export function getChannelInternalId(handleOrYoutubeId: string): number | undefined {

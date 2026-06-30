@@ -33,9 +33,10 @@ This command remains independently runnable for backfills and repairs.
 
 - The ingest module is still transitional, but the public command surface already uses `ingest` names.
 - `ingest-channel-videos` does not yet ingest channel profile data, video metadata, and transcripts in one workflow.
-- Missing-channel creation inside the channel-videos storage flow is still planned; `ingest-channel-profile --save` already uses the creator repository to create or reuse the required stub Creator for direct channel saves.
+- The legacy `ingest-channel-videos` workflow still skips missing channels. The production ingest storage adapter now supports both safe missing-channel skips and future `createChannel: true` channel creation through the creator repository.
 - Transcript ingestion now stores versioned json3 transcript blobs in `transcripts` and parsed rows in `transcript_segments`.
 - `src/repositories/transcript.repository.ts` handles transcript version lookup, deduplication, and segment storage.
+- `src/ingest/ingestStorage.ts` maps future ingest orchestration to the creator, channel, video, and transcript repositories while keeping DB access out of core orchestration.
 
 ## Planning Boundary
 

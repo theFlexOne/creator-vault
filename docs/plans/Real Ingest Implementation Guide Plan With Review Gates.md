@@ -4,13 +4,13 @@ This plan follows the completed ingest vocabulary cleanup. At the time this plan
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
 - The ingest module still needs real orchestration in place of transitional wiring.
-- Phases 1-5 have been implemented and verified; the next active phase is Phase 6 storage adapter instructions.
+- Phases 1-6 have been implemented and verified; the next active phase is Phase 7 ingest orchestration instructions.
 - The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
   - `docs/plans/Future Transcript Schema TODO.md`
 - The current database schema already includes versioned `transcripts` plus `transcript_segments`, so the remaining work should build on that model and remove legacy plain-text assumptions from storage wiring and tests.
-- The current database schema already requires `channels.creator_id`, and creator persistence now lives in `src/repositories/creator.repository.ts`. Remaining storage work should use that boundary when wiring production ingest storage.
+- The current database schema already requires `channels.creator_id`, and creator persistence now lives in `src/repositories/creator.repository.ts`. Production ingest storage uses that boundary for creator-backed channel persistence.
 - There are root-level sample/data files that may be useful fixtures or stray artifacts; they should be reviewed before deletion.
 - This plan is intentionally written for a human/user-led implementation. The agent should review, explain, and verify only. The agent should not edit code while executing this plan unless explicitly told to abandon that constraint.
 

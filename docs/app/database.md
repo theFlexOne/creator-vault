@@ -70,6 +70,7 @@ Current alignment:
 - Channel and video repositories write `source_tags` JSON arrays, matching `channels.source_tags` and `videos.source_tags`.
 - The creator repository creates or reuses stub rows in `creators`; channel profile saves store the resulting `channels.creator_id`.
 - Transcript persistence uses the existing versioned `transcripts` table plus `transcript_segments`.
+- The production ingest storage adapter uses repository methods for creator-backed channel saves, video saves, transcript version lookup/save, segment saves, and transcript-backfill video selection.
 
 Legacy artifacts:
 

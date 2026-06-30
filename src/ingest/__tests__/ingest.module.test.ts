@@ -39,9 +39,12 @@ const createDependencies = (adapter: jest.Mocked<IngestModule>): CreateIngestMod
             language: input.language,
             version: 1,
             rawFormat: input.rawFormat,
+            rawBlob: input.rawBlob,
             checksum: input.checksum,
+            isNewVersion: true,
         }),
         saveTranscriptSegments: async (segments) => ({ savedCount: segments.length }),
+        findVideosMissingTranscripts: async () => [],
     },
     tempDirectoryProvider: {
         getTempDirectory: jest.fn(() => '/tmp/creator-vault'),
