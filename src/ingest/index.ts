@@ -48,8 +48,14 @@ export function runIngestChannelProfile(inputs: string[], save: boolean) {
     return defaultIngestModule.ingestChannelProfile(inputs, { save });
 }
 
-export function runIngestChannelVideos(inputs: string[], limit: number, save: boolean, batch: number) {
-    return defaultIngestModule.ingestChannelVideos(inputs, { limit, save, batch });
+export function runIngestChannelVideos(
+    inputs: string[],
+    limit: number,
+    save: boolean,
+    batch: number,
+    createChannel = false,
+) {
+    return defaultIngestModule.ingestChannelVideos(inputs, { limit, save, batch, createChannel });
 }
 
 export function runIngestTranscripts(inputs: string[], limit: number, save: boolean) {

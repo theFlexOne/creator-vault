@@ -23,6 +23,13 @@ const ingestTranscripts: CommandModule<{}, { inputs: string[]; limit: number; sa
                 describe: 'Save to DB',
                 type: 'boolean',
                 default: false,
+            })
+            .check((args) => {
+                if (args.limit < 1) {
+                    throw new Error('--limit must be greater than 0.');
+                }
+
+                return true;
             });
     },
     handler: async (argv) => {

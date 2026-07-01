@@ -3,8 +3,8 @@
 This plan follows the completed ingest vocabulary cleanup. At the time this plan was written:
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
-- The ingest module now has direct source/storage/parser orchestration; Phase 8 still needs CLI and report finalization.
-- Phases 1-7 have been implemented and verified; the next active phase is Phase 8 CLI and report finalization instructions.
+- The ingest module now has direct source/storage/parser orchestration; Phase 7.1 adds CLI/report contract coverage before Phase 8 finalizes user-facing behavior.
+- Phases 1-7 have been implemented and verified; Phase 7.1 is being implemented and should be reviewed before Phase 8 CLI and report finalization.
 - The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
@@ -267,11 +267,48 @@ Acceptance:
 
 Pause and wait for `continue`.
 
-## Phase 8: CLI and Report Finalization
+## Phase 7.1: CLI and Report Contract Tightening
 
 Agent pre-phase review:
 - Review your Phase 7 orchestration implementation.
-- Confirm transitional delegation is gone only if equivalent tests exist.
+- Confirm public commands route through `src/ingest/index.ts` and no longer delegate to legacy service workflows.
+- Confirm `--save=false` does not write and `ingest-transcripts` does not retrieve channel profile or video metadata.
+- Inspect command tests and identify whether they cover only handler delegation or full yargs option parsing.
+- Inspect report types and identify missing fields before Phase 8 finalizes user-facing output.
+
+Agent output:
+- A CLI contract note showing current options, intended Phase 8 options, defaults, validation, and where `--create-channel` should apply.
+- A report contract note listing the final report fields needed for channels, videos, captions, transcript versions, skipped records, parser diagnostics, and failures.
+- Test examples for yargs option parsing, `--save=false` no-write behavior, transcript backfill identity, parser diagnostics in reports, and report counters.
+
+Implementation guidance:
+- Keep existing command names: `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
+- Add command parser tests before changing command defaults or adding new options.
+- Treat `--batch` as metadata page size and prepare to move the default to `10` in Phase 8.
+- Scope `--create-channel` to `ingest-channel-videos` unless review finds another command has real missing-channel creation behavior; default it to `false`.
+- Do not make transcript backfill create channels; `ingest-transcripts` must remain a repair/backfill workflow for existing stored channels and videos.
+- Add or tighten report types before formatting user-facing output so Phase 8 can document stable fields.
+- Include parser diagnostics in reports without throwing away partial successes.
+- Keep raw json3 blobs out of final user-facing reports; report counts, IDs, diagnostics, and failures instead.
+- Follow `docs/agents/docs-update-checklist.md`; update current-state docs if command contracts or report fields change.
+
+Acceptance:
+- Command tests cover yargs option parsing and validation for each ingest command.
+- Report tests cover success, dry-run, skipped records, parser diagnostics, partial caption failure, and transcript-version unchanged cases.
+- `ingest-channel-videos` has a clear internal option path for `createChannel`, even if the public CLI flag is finalized in Phase 8.
+- `ingest-transcripts` still does not retrieve channel profile or video metadata and does not create channels.
+- `npm test -- src/commands` passes after your implementation.
+- `npm test -- src/ingest` passes after your implementation.
+- `npm run compile` passes after your implementation.
+
+Pause and wait for `continue`.
+
+## Phase 8: CLI and Report Finalization
+
+Agent pre-phase review:
+- Review your Phase 7.1 CLI/report contract implementation.
+- Confirm command parser tests cover defaults, aliases, validation, and the final `--create-channel` scope.
+- Confirm report types include stable fields for docs, logs, tests, and partial-failure behavior.
 - Confirm `--save=false` does not write and `ingest-transcripts` does not retrieve metadata again.
 
 Agent output:

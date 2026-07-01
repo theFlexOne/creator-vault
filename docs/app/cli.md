@@ -52,18 +52,19 @@ Examples:
 ```sh
 npm run start -- ingest-channel-videos @example
 npm run start -- ingest-channel-videos @example --limit 50 --batch 10
-npm run start -- ingest-channel-videos channels.txt --limit 100 --batch 20 --save
+npm run start -- ingest-channel-videos channels.txt --limit 100 --batch 10 --save --create-channel
 ```
 
 Options:
 
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
-- `--batch <number>`: `/videos` metadata page size. Default: `20`.
+- `--batch <number>`: `/videos` metadata page size. Default: `10`.
 - `--save`, `-s`: save video metadata to SQLite. Default: `false`.
+- `--create-channel`: create or reuse a creator-backed YouTube channel when saving. Default: `false`.
 
 `--limit` and `--batch` must be greater than zero.
 
-When `--save` is enabled, the command creates or reuses a creator-backed YouTube channel, saves video metadata, and stores new transcript versions plus segments for downloaded json3 captions. Without `--save`, it retrieves channel profile and video metadata but does not write to SQLite or download captions.
+When `--save` and `--create-channel` are enabled, the command creates or reuses a creator-backed YouTube channel, saves video metadata, and stores new transcript versions plus segments for downloaded json3 captions. With `--save` alone, channels missing from SQLite are skipped. Without `--save`, it retrieves channel profile and video metadata but does not write to SQLite or download captions.
 
 ## `ingest-transcripts <inputs..>`
 
@@ -82,7 +83,9 @@ Options:
 - `--limit <number>`: maximum transcripts to ingest per channel. Default: `10`.
 - `--save`, `-s`: save transcripts to SQLite. Default: `false`.
 
-The command looks up the channel in SQLite, selects stored videos missing transcript rows, downloads preferred English json3 captions, parses them, and stores transcript versions plus segments only when `--save` is enabled. It does not retrieve channel profile data or video metadata again.
+`--limit` must be greater than zero.
+
+The command looks up the channel in SQLite, selects stored videos missing transcript rows, downloads preferred English json3 captions, parses them, and stores transcript versions plus segments only when `--save` is enabled. It does not create channels, retrieve channel profile data, or retrieve video metadata again.
 
 ## `test-connection`
 

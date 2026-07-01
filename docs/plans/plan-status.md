@@ -21,7 +21,7 @@ Status vocabulary:
 
 | Plan | Status | Current phase | Next step | Last updated |
 | --- | --- | --- | --- | --- |
-| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `active` | `8` | Review Phase 7 ingest orchestration, then start Phase 8 CLI and report finalization. | `2026-06-30` |
+| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `active` | `7.1` | Review Phase 7.1 CLI/report contract implementation, then start Phase 8 CLI/report finalization. | `2026-06-30` |
 | [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `in-progress` | `1` | Start Phase 1 by adding `normalizeYoutubeUrl` branch coverage after the active plan changes status. | `2026-06-28` |
 
 ## Update Rules

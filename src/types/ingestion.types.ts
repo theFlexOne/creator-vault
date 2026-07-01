@@ -26,8 +26,29 @@ export type VideoRecord = {
 
 export type TranscriptRecord = {
     videoId?: number;
+    youtubeVideoId?: string;
+    captionSource?: 'manual' | 'automatic';
+    language?: string;
+    segmentCount?: number;
+    transcriptVersionCreated?: boolean;
     text?: string;
     transcript?: string;
+};
+
+export type IngestFailure = {
+    scope: 'channel' | 'video-page' | 'caption' | 'transcript-version' | 'transcript-segment' | 'parser';
+    identifier: string;
+    message: string;
+};
+
+export type IngestParserDiagnostic = {
+    videoId?: number;
+    youtubeVideoId?: string;
+    captionSource: 'manual' | 'automatic';
+    language: string;
+    code: string;
+    message: string;
+    eventIndex?: number;
 };
 
 export type ChannelIngestReport = {
@@ -35,9 +56,12 @@ export type ChannelIngestReport = {
     inputs: string[];
     resolved: string[];
     save: boolean;
+    dryRun: boolean;
     fetched: ChannelRecord[];
     failed: string[];
     savedCount: number;
+    skippedRecords: number;
+    failures: IngestFailure[];
 };
 
 export type VideoChannelIngestReport = {
@@ -47,7 +71,18 @@ export type VideoChannelIngestReport = {
     videosFetched: number;
     videosUpserted: number;
     batchFailures: number;
+    captionsRequested: number;
+    captionsDownloaded: number;
+    captionsMissing: number;
+    captionsFailed: number;
+    transcriptVersionsCreated: number;
+    transcriptVersionsUnchanged: number;
+    transcriptSegmentsSaved: number;
+    skippedRecords: number;
+    parserDiagnostics: IngestParserDiagnostic[];
+    failures: IngestFailure[];
     failed: boolean;
+    skipped: boolean;
 };
 
 export type VideoIngestReport = {
@@ -55,13 +90,26 @@ export type VideoIngestReport = {
     inputs: string[];
     resolved: string[];
     save: boolean;
+    dryRun: boolean;
+    createChannel: boolean;
     limit: number;
     batchSize: number;
     channelsTotal: number;
     channelsSucceeded: number;
     channelsFailed: number;
+    channelsSkipped: number;
     batchesFailed: number;
     videosUpserted: number;
+    captionsRequested: number;
+    captionsDownloaded: number;
+    captionsMissing: number;
+    captionsFailed: number;
+    transcriptVersionsCreated: number;
+    transcriptVersionsUnchanged: number;
+    transcriptSegmentsSaved: number;
+    skippedRecords: number;
+    parserDiagnostics: IngestParserDiagnostic[];
+    failures: IngestFailure[];
     channelReports: VideoChannelIngestReport[];
 };
 
@@ -75,10 +123,21 @@ export type TranscriptIngestReport = {
     inputs: string[];
     resolved: string[];
     save: boolean;
+    dryRun: boolean;
     limit: number;
     channelsProcessed: number;
     missingChannels: string[];
     transcriptsFetched: number;
     transcriptsStored: number;
+    captionsRequested: number;
+    captionsDownloaded: number;
+    captionsMissing: number;
+    captionsFailed: number;
+    transcriptVersionsCreated: number;
+    transcriptVersionsUnchanged: number;
+    transcriptSegmentsSaved: number;
+    skippedRecords: number;
+    parserDiagnostics: IngestParserDiagnostic[];
+    failures: IngestFailure[];
     results: TranscriptChannelResult[];
 };

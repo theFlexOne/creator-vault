@@ -22,13 +22,26 @@ export async function runIngestChannelVideosWorkflow(
         inputs,
         resolved: [],
         save,
+        dryRun: !save,
+        createChannel: false,
         limit,
         batchSize: batch,
         channelsTotal: 0,
         channelsSucceeded: 0,
         channelsFailed: 0,
+        channelsSkipped: 0,
         batchesFailed: 0,
         videosUpserted: 0,
+        captionsRequested: 0,
+        captionsDownloaded: 0,
+        captionsMissing: 0,
+        captionsFailed: 0,
+        transcriptVersionsCreated: 0,
+        transcriptVersionsUnchanged: 0,
+        transcriptSegmentsSaved: 0,
+        skippedRecords: 0,
+        parserDiagnostics: [],
+        failures: [],
         channelReports: [],
     };
 
@@ -55,7 +68,18 @@ export async function runIngestChannelVideosWorkflow(
             videosFetched: 0,
             videosUpserted: 0,
             batchFailures: 0,
+            captionsRequested: 0,
+            captionsDownloaded: 0,
+            captionsMissing: 0,
+            captionsFailed: 0,
+            transcriptVersionsCreated: 0,
+            transcriptVersionsUnchanged: 0,
+            transcriptSegmentsSaved: 0,
+            skippedRecords: 0,
+            parserDiagnostics: [],
+            failures: [],
             failed: false,
+            skipped: false,
         };
         summary.channelReports.push(channelReport);
 
@@ -66,6 +90,13 @@ export async function runIngestChannelVideosWorkflow(
                 logger.warn(`Failed to ingest channel profile for: ${identifier}`);
                 summary.channelsFailed += 1;
                 channelReport.failed = true;
+                const failure = {
+                    scope: 'channel' as const,
+                    identifier,
+                    message: `Failed to ingest channel profile for: ${identifier}`,
+                };
+                channelReport.failures.push(failure);
+                summary.failures.push(failure);
                 continue;
             }
             channelReport.fetchedChannel = channelInfo;
@@ -77,8 +108,10 @@ export async function runIngestChannelVideosWorkflow(
 
                 if (!youtubeChannelId && !channelHandle) {
                     logger.warn(`Channel has no youtubeChannelId or handle. Skipping save for: ${identifier}`);
-                    summary.channelsFailed += 1;
-                    channelReport.failed = true;
+                    summary.channelsSkipped += 1;
+                    summary.skippedRecords += 1;
+                    channelReport.skipped = true;
+                    channelReport.skippedRecords += 1;
                     continue;
                 }
 
@@ -89,8 +122,10 @@ export async function runIngestChannelVideosWorkflow(
 
                 if (!channelId) {
                     logger.warn(`Channel not found in DB: ${identifier}. Skipping.`);
-                    summary.channelsFailed += 1;
-                    channelReport.failed = true;
+                    summary.channelsSkipped += 1;
+                    summary.skippedRecords += 1;
+                    channelReport.skipped = true;
+                    channelReport.skippedRecords += 1;
                     continue;
                 }
             }
@@ -118,10 +153,20 @@ export async function runIngestChannelVideosWorkflow(
                         summary.videosUpserted += upsertedCount;
                         channelReport.videosUpserted += upsertedCount;
                         logger.info(`Upserted ${upsertedCount} videos for channel: ${identifier} (batch starting at ${counter})`);
+                    } else {
+                        summary.skippedRecords += videoInfoList.length;
+                        channelReport.skippedRecords += videoInfoList.length;
                     }
                 } catch (error) {
                     summary.batchesFailed += 1;
                     channelReport.batchFailures += 1;
+                    const failure = {
+                        scope: 'video-page' as const,
+                        identifier: `${identifier}:${counter}`,
+                        message: getErrorMessage(error),
+                    };
+                    channelReport.failures.push(failure);
+                    summary.failures.push(failure);
                     logger.error(`Batch failed for channel ${identifier} at offset ${counter}: ${getErrorMessage(error)}`);
                 } finally {
                     counter += batchSize;
@@ -133,6 +178,13 @@ export async function runIngestChannelVideosWorkflow(
         } catch (error) {
             summary.channelsFailed += 1;
             channelReport.failed = true;
+            const failure = {
+                scope: 'channel' as const,
+                identifier,
+                message: getErrorMessage(error),
+            };
+            channelReport.failures.push(failure);
+            summary.failures.push(failure);
             logger.error(`Channel failed for ${identifier}: ${getErrorMessage(error)}`);
         }
     }

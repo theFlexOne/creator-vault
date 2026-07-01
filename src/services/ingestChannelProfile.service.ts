@@ -11,9 +11,12 @@ export async function runIngestChannelProfileWorkflow(inputs: string[], save: bo
         inputs,
         resolved: urls,
         save,
+        dryRun: !save,
         fetched: [],
         failed: [],
         savedCount: 0,
+        skippedRecords: 0,
+        failures: [],
     };
 
     for (const url of urls) {
@@ -24,6 +27,11 @@ export async function runIngestChannelProfileWorkflow(inputs: string[], save: bo
             if (!channelInfo) {
                 logger.error(`Failed to ingest channel profile for ${url}.`);
                 report.failed.push(url);
+                report.failures.push({
+                    scope: 'channel',
+                    identifier: url,
+                    message: `Failed to ingest channel profile for ${url}.`,
+                });
                 continue;
             }
 
@@ -32,6 +40,7 @@ export async function runIngestChannelProfileWorkflow(inputs: string[], save: bo
                 upsertChannelInfo(channelInfo);
                 report.savedCount += 1;
             } else {
+                report.skippedRecords += 1;
                 logger.info(JSON.stringify(channelInfo, null, 2));
                 logger.info('Channel not saved (use --save to store in DB).');
             }
@@ -39,6 +48,11 @@ export async function runIngestChannelProfileWorkflow(inputs: string[], save: bo
         } catch (error) {
             logger.error(`Error during ingestChannelProfile for ${url}:`, error);
             report.failed.push(url);
+            report.failures.push({
+                scope: 'channel',
+                identifier: url,
+                message: error instanceof Error ? error.message : String(error),
+            });
         }
     }
 

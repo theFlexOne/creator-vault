@@ -84,16 +84,17 @@ Fetches video metadata for channel identifiers. With `--save`, it also downloads
 
 ```sh
 npm run start -- ingest-channel-videos @example --limit 25
-npm run start -- ingest-channel-videos channels.txt --limit 100 --batch 20 --save
+npm run start -- ingest-channel-videos channels.txt --limit 100 --batch 10 --save --create-channel
 ```
 
 Options:
 
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
-- `--batch <number>`: `/videos` metadata page size. Default: `20`.
+- `--batch <number>`: `/videos` metadata page size. Default: `10`.
 - `--save`, `-s`: persist video metadata and available json3 transcripts.
+- `--create-channel`: create or reuse a creator-backed YouTube channel when saving. Default: `false`.
 
-When saving, the command creates or reuses a creator-backed YouTube channel before storing video and transcript data.
+When saving without `--create-channel`, the command skips channels that are not already in SQLite.
 
 ### `ingest-transcripts <inputs..>`
 

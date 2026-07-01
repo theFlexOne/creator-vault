@@ -1,7 +1,13 @@
 import { CommandModule } from 'yargs';
 import { runIngestChannelVideos } from '../ingest';
 
-const ingestChannelVideos: CommandModule<{}, { inputs: string[]; limit: number; save: boolean; batch: number }> = {
+const ingestChannelVideos: CommandModule<{}, {
+    inputs: string[];
+    limit: number;
+    save: boolean;
+    batch: number;
+    createChannel: boolean;
+}> = {
     command: 'ingest-channel-videos <inputs..>',
     describe: 'Ingests YouTube video metadata using the current video metadata workflow.',
 
@@ -27,7 +33,13 @@ const ingestChannelVideos: CommandModule<{}, { inputs: string[]; limit: number; 
             .option('batch', {
                 describe: 'Batch size for processing videos',
                 type: 'number',
-                default: 20,
+                default: 10,
+            })
+            .option('createChannel', {
+                alias: 'create-channel',
+                describe: 'Create or reuse a creator-backed YouTube channel when saving videos',
+                type: 'boolean',
+                default: false,
             })
             .check((args) => {
                 if (args.limit < 1 || args.batch < 1) {
@@ -38,8 +50,8 @@ const ingestChannelVideos: CommandModule<{}, { inputs: string[]; limit: number; 
             });
     },
     handler: async (argv) => {
-        const { inputs, limit, save, batch } = argv;
-        await runIngestChannelVideos(inputs, limit, save, batch);
+        const { inputs, limit, save, batch, createChannel } = argv;
+        await runIngestChannelVideos(inputs, limit, save, batch, createChannel);
     },
 };
 

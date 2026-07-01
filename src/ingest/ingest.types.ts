@@ -8,6 +8,7 @@ export type IngestChannelVideosOptions = {
     limit: number;
     save: boolean;
     batch: number;
+    createChannel?: boolean;
 };
 
 export type IngestTranscriptsOptions = {

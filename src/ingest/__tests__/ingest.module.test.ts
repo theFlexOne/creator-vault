@@ -92,9 +92,12 @@ describe('createIngestModule', () => {
             inputs: ['channels.txt'],
             resolved: ['@alpha'],
             save: true,
+            dryRun: false,
             fetched: [channel],
             failed: [],
             savedCount: 1,
+            skippedRecords: 0,
+            failures: [],
         });
 
         expect(dependencies.inputLoader.resolveIdentifiers).toHaveBeenCalledWith(['channels.txt']);
@@ -116,8 +119,10 @@ describe('createIngestModule', () => {
         const ingest = createIngestModule(dependencies);
 
         await expect(ingest.ingestChannelProfile(['@alpha'], { save: false })).resolves.toMatchObject({
+            dryRun: true,
             fetched: [channel],
             savedCount: 0,
+            skippedRecords: 1,
         });
 
         expect(dependencies.storage.findOrCreateYoutubeChannel).not.toHaveBeenCalled();
@@ -177,19 +182,35 @@ describe('createIngestModule', () => {
 
         const ingest = createIngestModule(dependencies);
 
-        await expect(ingest.ingestChannelVideos(['channels.txt'], { limit: 2, save: true, batch: 2 }))
+        await expect(ingest.ingestChannelVideos(['channels.txt'], {
+            limit: 2,
+            save: true,
+            batch: 2,
+            createChannel: true,
+        }))
             .resolves.toMatchObject({
                 kind: 'videos',
                 inputs: ['channels.txt'],
                 resolved: ['@alpha'],
                 save: true,
+                dryRun: false,
+                createChannel: true,
                 limit: 2,
                 batchSize: 2,
                 channelsTotal: 1,
                 channelsSucceeded: 1,
                 channelsFailed: 0,
+                channelsSkipped: 0,
                 batchesFailed: 0,
                 videosUpserted: 2,
+                captionsRequested: 2,
+                captionsDownloaded: 1,
+                captionsMissing: 1,
+                transcriptVersionsCreated: 1,
+                transcriptSegmentsSaved: 1,
+                skippedRecords: 0,
+                parserDiagnostics: [],
+                failures: [],
                 channelReports: [
                     {
                         identifier: '@alpha',
@@ -198,7 +219,16 @@ describe('createIngestModule', () => {
                         videosFetched: 2,
                         videosUpserted: 2,
                         batchFailures: 0,
+                        captionsRequested: 2,
+                        captionsDownloaded: 1,
+                        captionsMissing: 1,
+                        transcriptVersionsCreated: 1,
+                        transcriptSegmentsSaved: 1,
+                        skippedRecords: 0,
+                        parserDiagnostics: [],
+                        failures: [],
                         failed: false,
+                        skipped: false,
                     },
                 ],
             });
@@ -248,14 +278,23 @@ describe('createIngestModule', () => {
 
         const ingest = createIngestModule(dependencies);
 
-        await expect(ingest.ingestChannelVideos(['@alpha'], { limit: 1, save: false, batch: 1 }))
+        await expect(ingest.ingestChannelVideos(['@alpha'], {
+            limit: 1,
+            save: false,
+            batch: 1,
+            createChannel: false,
+        }))
             .resolves.toMatchObject({
+                dryRun: true,
+                createChannel: false,
                 videosUpserted: 0,
+                skippedRecords: 1,
                 channelReports: [
                     {
                         identifier: '@alpha',
                         videosFetched: 1,
                         videosUpserted: 0,
+                        skippedRecords: 1,
                     },
                 ],
             });
@@ -263,6 +302,186 @@ describe('createIngestModule', () => {
         expect(dependencies.storage.findOrCreateYoutubeChannel).not.toHaveBeenCalled();
         expect(dependencies.storage.saveVideos).not.toHaveBeenCalled();
         expect(dependencies.youtubeSource.downloadJson3Captions).not.toHaveBeenCalled();
+        expect(dependencies.storage.saveTranscriptVersion).not.toHaveBeenCalled();
+        expect(dependencies.storage.saveTranscriptSegments).not.toHaveBeenCalled();
+    });
+
+    it('skips channel video saves when createChannel is false and the channel is missing', async () => {
+        const dependencies = createDependencies();
+        const channel = {
+            youtubeChannelId: 'UC123',
+            name: 'Alpha',
+            handle: '@alpha',
+            url: 'https://www.youtube.com/@alpha',
+        };
+        jest.mocked(dependencies.inputLoader.resolveIdentifiers).mockResolvedValue(['@alpha']);
+        jest.mocked(dependencies.youtubeSource.fetchChannelProfile).mockResolvedValue(channel);
+        jest.mocked(dependencies.storage.findOrCreateYoutubeChannel).mockResolvedValue(undefined);
+
+        const ingest = createIngestModule(dependencies);
+
+        await expect(ingest.ingestChannelVideos(['@alpha'], {
+            limit: 1,
+            save: true,
+            batch: 1,
+            createChannel: false,
+        })).resolves.toMatchObject({
+            createChannel: false,
+            channelsSkipped: 1,
+            channelsFailed: 0,
+            skippedRecords: 1,
+            channelReports: [
+                {
+                    identifier: '@alpha',
+                    skipped: true,
+                    skippedRecords: 1,
+                    failed: false,
+                },
+            ],
+        });
+
+        expect(dependencies.storage.findOrCreateYoutubeChannel).toHaveBeenCalledWith(channel, { createChannel: false });
+        expect(dependencies.youtubeSource.fetchChannelVideosPage).not.toHaveBeenCalled();
+        expect(dependencies.storage.saveVideos).not.toHaveBeenCalled();
+    });
+
+    it('reports parser diagnostics and unchanged transcript versions for channel videos', async () => {
+        const dependencies = createDependencies();
+        const channel = {
+            youtubeChannelId: 'UC123',
+            name: 'Alpha',
+            handle: '@alpha',
+            url: 'https://www.youtube.com/@alpha',
+        };
+        const rawJson3 = '{"events":[{"segs":[{"utf8":"No timing"}]}]}';
+        jest.mocked(dependencies.inputLoader.resolveIdentifiers).mockResolvedValue(['@alpha']);
+        jest.mocked(dependencies.youtubeSource.fetchChannelProfile).mockResolvedValue(channel);
+        jest.mocked(dependencies.youtubeSource.fetchChannelVideosPage).mockResolvedValue({
+            channelInput: '@alpha',
+            pageRange: { playlistStart: 1, playlistEnd: 1 },
+            videos: [
+                { youtubeVideoId: 'vid-1', title: 'One', url: 'https://youtube.com/watch?v=vid-1' },
+            ],
+        });
+        jest.mocked(dependencies.storage.findOrCreateYoutubeChannel).mockResolvedValue({
+            channelId: 7,
+            youtubeChannelId: 'UC123',
+            handle: '@alpha',
+        });
+        jest.mocked(dependencies.storage.saveVideos).mockResolvedValue({
+            savedCount: 1,
+            videos: [{ id: 10, youtubeVideoId: 'vid-1' }],
+        });
+        jest.mocked(dependencies.youtubeSource.downloadJson3Captions).mockResolvedValue([
+            {
+                videoId: 'vid-1',
+                language: 'en',
+                captionSource: 'manual',
+                filePath: '/tmp/creator-vault/vid-1.manual.en.json3',
+            },
+        ]);
+        mockReadFile.mockResolvedValue(rawJson3);
+        jest.mocked(dependencies.storage.saveTranscriptVersion).mockResolvedValue({
+            transcriptId: 99,
+            videoId: 10,
+            captionSource: 'manual',
+            language: 'en',
+            version: 1,
+            rawFormat: 'json3',
+            rawBlob: rawJson3,
+            checksum: 'sha256:test',
+            isNewVersion: false,
+        });
+
+        const ingest = createIngestModule(dependencies);
+
+        await expect(ingest.ingestChannelVideos(['@alpha'], {
+            limit: 1,
+            save: true,
+            batch: 1,
+            createChannel: true,
+        })).resolves.toMatchObject({
+            captionsRequested: 1,
+            captionsDownloaded: 1,
+            transcriptVersionsCreated: 0,
+            transcriptVersionsUnchanged: 1,
+            transcriptSegmentsSaved: 0,
+            parserDiagnostics: [
+                {
+                    videoId: 10,
+                    youtubeVideoId: 'vid-1',
+                    captionSource: 'manual',
+                    language: 'en',
+                    code: 'MISSING_TIMING',
+                    eventIndex: 0,
+                },
+            ],
+            channelReports: [
+                {
+                    parserDiagnostics: [
+                        {
+                            videoId: 10,
+                            youtubeVideoId: 'vid-1',
+                            code: 'MISSING_TIMING',
+                        },
+                    ],
+                    transcriptVersionsUnchanged: 1,
+                },
+            ],
+        });
+
+        expect(dependencies.storage.saveTranscriptSegments).not.toHaveBeenCalled();
+    });
+
+    it('reports caption download failures without failing the entire channel', async () => {
+        const dependencies = createDependencies();
+        const channel = {
+            youtubeChannelId: 'UC123',
+            name: 'Alpha',
+            handle: '@alpha',
+            url: 'https://www.youtube.com/@alpha',
+        };
+        jest.mocked(dependencies.inputLoader.resolveIdentifiers).mockResolvedValue(['@alpha']);
+        jest.mocked(dependencies.youtubeSource.fetchChannelProfile).mockResolvedValue(channel);
+        jest.mocked(dependencies.youtubeSource.fetchChannelVideosPage).mockResolvedValue({
+            channelInput: '@alpha',
+            pageRange: { playlistStart: 1, playlistEnd: 1 },
+            videos: [
+                { youtubeVideoId: 'vid-1', title: 'One', url: 'https://youtube.com/watch?v=vid-1' },
+            ],
+        });
+        jest.mocked(dependencies.storage.findOrCreateYoutubeChannel).mockResolvedValue({
+            channelId: 7,
+            youtubeChannelId: 'UC123',
+            handle: '@alpha',
+        });
+        jest.mocked(dependencies.storage.saveVideos).mockResolvedValue({
+            savedCount: 1,
+            videos: [{ id: 10, youtubeVideoId: 'vid-1' }],
+        });
+        jest.mocked(dependencies.youtubeSource.downloadJson3Captions).mockRejectedValue(new Error('caption failed'));
+
+        const ingest = createIngestModule(dependencies);
+
+        await expect(ingest.ingestChannelVideos(['@alpha'], {
+            limit: 1,
+            save: true,
+            batch: 1,
+            createChannel: true,
+        })).resolves.toMatchObject({
+            channelsSucceeded: 1,
+            channelsFailed: 0,
+            captionsRequested: 1,
+            captionsFailed: 1,
+            failures: [
+                {
+                    scope: 'caption',
+                    identifier: '@alpha',
+                    message: 'caption failed',
+                },
+            ],
+        });
+
         expect(dependencies.storage.saveTranscriptVersion).not.toHaveBeenCalled();
         expect(dependencies.storage.saveTranscriptSegments).not.toHaveBeenCalled();
     });
@@ -308,15 +527,33 @@ describe('createIngestModule', () => {
                 inputs: ['channels.txt'],
                 resolved: ['@alpha'],
                 save: true,
+                dryRun: false,
                 limit: 1,
                 channelsProcessed: 1,
                 missingChannels: [],
                 transcriptsFetched: 1,
                 transcriptsStored: 1,
+                captionsRequested: 1,
+                captionsDownloaded: 1,
+                captionsMissing: 0,
+                captionsFailed: 0,
+                transcriptVersionsCreated: 1,
+                transcriptVersionsUnchanged: 0,
+                transcriptSegmentsSaved: 1,
+                skippedRecords: 0,
+                parserDiagnostics: [],
+                failures: [],
                 results: [
                     {
                         channel: '@alpha',
-                        transcripts: [{ videoId: 10, transcript: rawJson3 }],
+                        transcripts: [{
+                            videoId: 10,
+                            youtubeVideoId: 'vid-1',
+                            captionSource: 'automatic',
+                            language: 'en',
+                            segmentCount: 1,
+                            transcriptVersionCreated: true,
+                        }],
                     },
                 ],
             });
@@ -370,12 +607,23 @@ describe('createIngestModule', () => {
 
         await expect(ingest.ingestTranscripts(['@alpha'], { limit: 1, save: false }))
             .resolves.toMatchObject({
+                dryRun: true,
                 transcriptsFetched: 1,
                 transcriptsStored: 0,
+                captionsRequested: 1,
+                captionsDownloaded: 1,
+                captionsMissing: 0,
+                skippedRecords: 0,
                 results: [
                     {
                         channel: '@alpha',
-                        transcripts: [{ videoId: 10, transcript: rawJson3 }],
+                        transcripts: [{
+                            videoId: 10,
+                            youtubeVideoId: 'vid-1',
+                            captionSource: 'automatic',
+                            language: 'en',
+                            segmentCount: 1,
+                        }],
                     },
                 ],
             });

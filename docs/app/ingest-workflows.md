@@ -21,13 +21,13 @@ With `--save`, ingest storage creates or reuses the stub Creator keyed by the Yo
 
 `ingest-channel-videos` resolves input identifiers, retrieves channel profile data, retrieves `/videos` metadata pages in batches, and optionally stores videos plus json3 transcript versions and segments.
 
-With `--save`, ingest storage creates or reuses the creator-backed YouTube channel, saves retrieved videos, downloads preferred English json3 captions, parses them, and saves transcript versions plus normalized segments. Without `--save`, it retrieves profile and video metadata but does not write to SQLite or download captions.
+With `--save --create-channel`, ingest storage creates or reuses the creator-backed YouTube channel, saves retrieved videos, downloads preferred English json3 captions, parses them, and saves transcript versions plus normalized segments. With `--save` alone, missing channels are skipped. Without `--save`, it retrieves profile and video metadata but does not write to SQLite or download captions.
 
 ### 3. Transcripts
 
 `ingest-transcripts` resolves input identifiers, looks up each existing channel through ingest storage, selects stored videos without transcript rows, downloads preferred English json3 captions, parses them, and optionally stores transcript versions plus normalized segments.
 
-This command remains independently runnable for backfills and repairs. It does not fetch channel profile data or video metadata.
+This command remains independently runnable for backfills and repairs. It does not create channels, fetch channel profile data, or fetch video metadata.
 
 ## Current Notes
 
