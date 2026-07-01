@@ -40,9 +40,9 @@
    - malformed JSON input returning `[]`
    - unsupported JSON object shapes falling back to line splitting
 
-**2.3** Treat `src/services/command.service.ts` as a thin compatibility seam only.
-   - Add tests only if the wrapper remains in production code and is used by a current entrypoint.
-   - Otherwise prefer covering `resolveCliInputIdentifiers` directly.
+**2.3** Cover `resolveCliInputIdentifiers` directly.
+   - The old `src/services/command.service.ts` compatibility wrapper has been removed.
+   - Keep future input-loader tests on the current CLI input boundary.
 
 **2.4** Run the CLI input test target and confirm current supported file-input behavior is documented by tests.
 

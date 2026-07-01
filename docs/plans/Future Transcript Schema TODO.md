@@ -42,9 +42,8 @@ transcript_segments (
 
 ## Remaining Follow-Up
 
-- Use the finalized CLI/report contract for transcript versions, skipped rows, parser diagnostics, and failures as Phase 8 polishes user-facing output.
 - Keep `ingest-transcripts` independently runnable for backfills and repairs against the existing `transcripts` table.
-- Remove any remaining plain-text transcript compatibility assumptions from legacy services and tests during final cleanup.
+- Legacy plain-text transcript workflow services and tests have been removed; new transcript behavior lives in `src/ingest/` and `src/transcripts/`.
 
 ## Implementation Pointers
 

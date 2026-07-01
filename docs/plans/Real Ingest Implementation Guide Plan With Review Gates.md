@@ -3,8 +3,8 @@
 This plan follows the completed ingest vocabulary cleanup. At the time this plan was written:
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
-- The ingest module now has direct source/storage/parser orchestration; Phase 7.1 adds CLI/report contract coverage before Phase 8 finalizes user-facing behavior.
-- Phases 1-7 have been implemented and verified; Phase 7.1 is being implemented and should be reviewed before Phase 8 CLI and report finalization.
+- The ingest module now has direct source/storage/parser orchestration; Phase 7.1 added CLI/report contract coverage before Phase 8 finalizes user-facing behavior.
+- Phases 1-9 have been implemented and verified; the real ingest implementation plan is complete.
 - The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
@@ -12,22 +12,22 @@ This plan follows the completed ingest vocabulary cleanup. At the time this plan
 - The current database schema already includes versioned `transcripts` plus `transcript_segments`, so the remaining work should build on that model and remove legacy plain-text assumptions from storage wiring and tests.
 - The current database schema already requires `channels.creator_id`, and creator persistence now lives in `src/repositories/creator.repository.ts`. Production ingest storage uses that boundary for creator-backed channel persistence.
 - There are root-level sample/data files that may be useful fixtures or stray artifacts; they should be reviewed before deletion.
-- This plan is intentionally written for a human/user-led implementation. The agent should review, explain, and verify only. The agent should not edit code while executing this plan unless explicitly told to abandon that constraint.
+- This plan is intentionally written for a human/user-led implementation. The agent should review, explain, and verify only. The agent should not edit runtime code while executing this plan unless explicitly told to abandon that constraint. The agent may always edit plan/status files to keep review gates and plan state current.
 
 # Real Ingest Implementation Guide Plan With Review Gates
 
 ## Summary
 
-This plan is for you to implement manually. The agent’s job is not to edit code. The agent’s output after each phase is implementation notes, examples, and verification results that help you make the edits yourself.
+This plan is for you to implement manually. The agent’s job is not to edit runtime code. The agent’s output after each phase is implementation notes, examples, and verification results that help you make the edits yourself.
 
 Start at Phase 1. Before every phase after Phase 1, the agent must first review the previous phase’s implementation for correctness, scope control, and test status. Only then should it produce the next phase’s implementation notes.
 
 Hard rule for the agent:
-- Do not edit code.
-- Do not apply patches.
-- Do not run formatters or commands that rewrite files.
+- Do not edit runtime code.
+- Do not apply patches outside plan/status documentation.
+- Do not run formatters or commands that rewrite files outside plan/status documentation.
 - Do not delete files.
-- Read, analyze, run non-mutating verification, and provide instructions only.
+- Read, analyze, run non-mutating verification, update plan/status documentation, and provide instructions only.
 
 ## Review Gate Protocol
 
@@ -35,9 +35,9 @@ At the end of each phase, the agent must provide a gate report with:
 
 - **Phase completed:** phase number and name.
 - **Implementation notes produced:** concise list of docs, examples, commands, or design notes provided to the user.
-- **Code edited by agent:** must be `No`.
+- **Runtime code edited by agent:** must be `No`.
 - **Behavior changed by agent:** must be `No runtime behavior change`.
-- **Scope check:** confirm no code edits, no production schema change by the agent, no file deletion by the agent, no legacy CLI reintroduction, no cache workflow, and no public `--json`.
+- **Scope check:** confirm no runtime code edits, no production schema change by the agent, no file deletion by the agent, no legacy CLI reintroduction, no cache workflow, and no public `--json`.
 - **Verification run:** exact non-mutating commands run and pass/fail status.
 - **Known risks:** uncertainty, test gaps, or decisions still requiring user implementation.
 - **Next phase preview:** one sentence describing the next phase.
@@ -332,6 +332,11 @@ Acceptance:
 Pause and wait for `continue`.
 
 ## Phase 9: Final Legacy and Stray Code Cleanup
+
+Completion note:
+- Legacy ingest workflow services, their compatibility input wrapper, and their focused tests were removed after the public commands moved to `src/ingest`.
+- Current-state docs now describe `src/ingest` as the ingest orchestration layer and `src/services` as non-ingest support services.
+- Ambiguous non-ingest artifacts remain as follow-up decisions instead of being deleted as part of the real ingest plan.
 
 Agent pre-phase review:
 - Review your Phase 8 CLI/report implementation.

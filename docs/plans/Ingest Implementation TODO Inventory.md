@@ -24,12 +24,8 @@ This note records real-ingestion follow-up after the schema/repository, source a
 - Validate chunk-size behavior for `/videos` metadata ingestion.
   Page range type is `src/ingest/youtubeSource.ts:9`. The source-layer default page size is `src/ingest/youtubeSource.ts:7`, and the public CLI `--batch` default is now `10`.
 
-- Polish user-facing report presentation and any remaining README/app docs in Phase 8.
-
-- Remove remaining compatibility cleanup around legacy service-level workflows after report and CLI behavior are finalized.
-  Current alignment notes are `docs/app/ingest-workflows.md` and `docs/app/database.md`.
-
-- Remove remaining compatibility TODOs and old workflow services during final cleanup.
+- Decide what to do with ambiguous non-ingest cleanup candidates identified during final cleanup.
+  Current candidates include unused prompt helpers, historical seed artifacts, seed conversion scripts, and the `yt-dlp` Postman investigation collection.
 
 ## Post-Plan Follow-Up
 

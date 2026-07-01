@@ -5,7 +5,7 @@ The public workflow vocabulary is `ingest`. The boundary is explicit:
 - `src/commands/*` expose yargs commands.
 - `src/ingest/index.ts` exports the public ingest functions used by commands.
 - `src/ingest/ingest.module.ts` orchestrates ingest workflows through source, storage, parser, temp-directory, and reporter dependencies.
-- `src/services/*` contain legacy workflow implementations retained until final cleanup.
+- Legacy ingest workflow services have been removed; `src/services/` is no longer an ingest orchestration layer.
 
 ## Current Pipeline
 
@@ -32,7 +32,7 @@ This command remains independently runnable for backfills and repairs. It does n
 ## Current Notes
 
 - The ingest module now owns direct orchestration for the public ingest commands.
-- Legacy service-level workflows remain in `src/services/*` until the final cleanup phase.
+- Public ingest commands no longer delegate to service-level workflow implementations.
 - `ingest-channel-videos` now ingests channel profile data, video metadata, and json3 transcripts in one workflow when `--save` is enabled.
 - Transcript ingestion now stores versioned json3 transcript blobs in `transcripts` and parsed rows in `transcript_segments`.
 - `src/repositories/transcript.repository.ts` handles transcript version lookup, deduplication, and segment storage.

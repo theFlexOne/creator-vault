@@ -18,12 +18,12 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 - Public ingest module: `src/ingest/index.ts`.
 - Ingest implementation: `src/ingest/`.
 - Ingest source adapter: `src/ingest/youtubeSource.ts`.
-- Workflow services: legacy implementations under `src/services/` retained until final cleanup.
+- Diagnostic services: `src/services/` contains non-ingest support services such as `testConnection`.
 - YouTube helpers: lower-level helpers under `src/lib/youtube/`.
 - SQLite connection: `src/lib/sqlite/db.ts`.
 - Persistence repositories: `src/repositories/`.
 
-`bin/run.ts` loads environment variables with `dotenv`, registers all yargs commands, and requires at least one command. Commands call the ingest module or service layer.
+`bin/run.ts` loads environment variables with `dotenv`, registers all yargs commands, and requires at least one command. Ingest commands call the public ingest module; diagnostics call support services.
 
 ## Data Flow
 
