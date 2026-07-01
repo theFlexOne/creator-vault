@@ -21,7 +21,7 @@ Status vocabulary:
 
 | Plan | Status | Current phase | Next step | Last updated |
 | --- | --- | --- | --- | --- |
-| [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `active` | `3` | Start Phase 3 by adding command default and `test-connection` diagnostic coverage. | `2026-07-01` |
+| [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `active` | `4` | Start Phase 4 by replacing hand-written persistence test schemas with a shared helper that loads `src/db/schema.sql`. | `2026-07-01` |
 | [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `completed` | `9` | Real ingest implementation, CLI/report finalization, and legacy ingest workflow cleanup are complete; decide separately on ambiguous non-ingest artifacts. | `2026-07-01` |
 
 ## Update Rules

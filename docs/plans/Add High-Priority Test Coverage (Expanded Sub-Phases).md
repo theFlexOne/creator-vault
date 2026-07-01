@@ -82,6 +82,8 @@ npm run test:coverage
 ---
 
 ### Phase 3 - Command And Diagnostic Coverage
+**Status:** Completed 2026-07-01. Added `test-connection` command delegation coverage and mocked diagnostic service tests for database success/failure, downloader success/failure, YouTube network success/warning, and final completion logging. Existing ingest command tests preserve the current defaults and validation behavior.
+
 **3.1** Preserve current ingest command defaults in command tests:
 - `ingest-channel-profile --save=false`
 - `ingest-channel-videos --limit=100`
