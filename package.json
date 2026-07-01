@@ -28,6 +28,7 @@
     "start": "ts-node -r tsconfig-paths/register ./bin/run.ts",
     "start:node": "node ./bin/run",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:services": "jest src/services",
     "test:commands": "jest src/commands",
     "test:lib": "jest src/lib",

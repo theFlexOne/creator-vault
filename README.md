@@ -159,6 +159,12 @@ Run tests:
 npm test
 ```
 
+Run coverage:
+
+```sh
+npm run test:coverage
+```
+
 Run focused test groups:
 
 ```sh

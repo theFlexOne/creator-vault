@@ -21,7 +21,7 @@ Status vocabulary:
 
 | Plan | Status | Current phase | Next step | Last updated |
 | --- | --- | --- | --- | --- |
-| [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `active` | `1` | Start Phase 1 by adding `normalizeYoutubeUrl` branch coverage. | `2026-07-01` |
+| [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `active` | `2` | Start Phase 2 by adding CLI input and `normalizeYoutubeUrl` branch coverage. | `2026-07-01` |
 | [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `completed` | `9` | Real ingest implementation, CLI/report finalization, and legacy ingest workflow cleanup are complete; decide separately on ambiguous non-ingest artifacts. | `2026-07-01` |
 
 ## Update Rules
