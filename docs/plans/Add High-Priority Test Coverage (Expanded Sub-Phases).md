@@ -54,6 +54,8 @@ npm run compile
 ---
 
 ### Phase 2 - CLI Input And URL Helper Branch Coverage
+**Status:** Completed 2026-07-01. Added direct `normalizeYoutubeUrl` branch coverage and CLI input edge-case coverage for empty inputs, empty files, malformed JSON, unsupported JSON fallback behavior, and file read failures.
+
 **2.1** Add direct tests for `normalizeYoutubeUrl`.
 
 **2.2** Cover:
