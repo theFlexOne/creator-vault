@@ -108,6 +108,36 @@ describe('createProductionYoutubeSource', () => {
         });
     });
 
+    it('skips channel video entries that do not include a YouTube video id', async () => {
+        mockYoutubeDl.mockResolvedValue({
+            entries: [
+                {
+                    title: 'Missing id',
+                    webpage_url: 'https://www.youtube.com/watch?v=missing',
+                },
+                {
+                    id: 'vid-2',
+                    title: 'Video Two',
+                    url: 'https://www.youtube.com/watch?v=vid-2',
+                },
+            ],
+        });
+
+        await expect(
+            createProductionYoutubeSource().fetchChannelVideosPage('@alpha', { playlistStart: 1, playlistEnd: 10 }),
+        ).resolves.toEqual({
+            channelInput: '@alpha',
+            pageRange: { playlistStart: 1, playlistEnd: 10 },
+            videos: [
+                {
+                    youtubeVideoId: 'vid-2',
+                    title: 'Video Two',
+                    url: 'https://www.youtube.com/watch?v=vid-2',
+                },
+            ],
+        });
+    });
+
     it('downloads manual json3 captions before automatic captions', async () => {
         mockYoutubeDl.mockResolvedValue({
             subtitles: {
@@ -193,6 +223,48 @@ describe('createProductionYoutubeSource', () => {
         expect(mockFetch).toHaveBeenCalledWith('https://captions.example/automatic.json3');
     });
 
+    it('prefers automatic captions when preferManual is false', async () => {
+        mockYoutubeDl.mockResolvedValue({
+            subtitles: {
+                en: [
+                    {
+                        ext: 'json3',
+                        url: 'https://captions.example/manual.json3',
+                    },
+                ],
+            },
+            automatic_captions: {
+                en: [
+                    {
+                        ext: 'json3',
+                        url: 'https://captions.example/automatic.json3',
+                    },
+                ],
+            },
+        });
+        const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        mockFetch.mockResolvedValue({
+            ok: true,
+            arrayBuffer: async () => new TextEncoder().encode('{"events":[]}').buffer,
+        } as Response);
+
+        await expect(
+            createProductionYoutubeSource().downloadJson3Captions(
+                [{ videoId: 'vid-1', language: 'en', preferManual: false }],
+                '/tmp/captions',
+            ),
+        ).resolves.toEqual([
+            {
+                videoId: 'vid-1',
+                language: 'en',
+                captionSource: 'automatic',
+                filePath: '/tmp/captions/vid-1.automatic.en.json3',
+            },
+        ]);
+
+        expect(mockFetch).toHaveBeenCalledWith('https://captions.example/automatic.json3');
+    });
+
     it('skips caption requests when no json3 captions are available', async () => {
         mockYoutubeDl.mockResolvedValue({
             subtitles: {
@@ -210,5 +282,85 @@ describe('createProductionYoutubeSource', () => {
 
         expect(global.fetch).not.toHaveBeenCalled();
         expect(mockWriteFile).not.toHaveBeenCalled();
+    });
+
+    it('returns no caption when the requested language is unavailable', async () => {
+        mockYoutubeDl.mockResolvedValue({
+            subtitles: {
+                fr: [{ ext: 'json3', url: 'https://captions.example/manual.fr.json3' }],
+            },
+            automatic_captions: {
+                fr: [{ ext: 'json3', url: 'https://captions.example/automatic.fr.json3' }],
+            },
+        });
+
+        await expect(
+            createProductionYoutubeSource().downloadJson3Captions(
+                [{ videoId: 'vid-1', language: 'en', preferManual: true }],
+                '/tmp/captions',
+            ),
+        ).resolves.toEqual([]);
+
+        expect(global.fetch).not.toHaveBeenCalled();
+        expect(mockWriteFile).not.toHaveBeenCalled();
+    });
+
+    it('throws when the selected caption track cannot be fetched', async () => {
+        mockYoutubeDl.mockResolvedValue({
+            subtitles: {
+                en: [{ ext: 'json3', url: 'https://captions.example/manual.json3' }],
+            },
+            automatic_captions: {},
+        });
+        const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        mockFetch.mockResolvedValue({
+            ok: false,
+        } as Response);
+
+        await expect(
+            createProductionYoutubeSource().downloadJson3Captions(
+                [{ videoId: 'vid-1', language: 'en', preferManual: true }],
+                '/tmp/captions',
+            ),
+        ).rejects.toThrow('Failed to download json3 captions for video vid-1.');
+    });
+
+    it('returns only the caption requests that actually download successfully', async () => {
+        mockYoutubeDl
+            .mockResolvedValueOnce({
+                subtitles: {
+                    en: [{ ext: 'json3', url: 'https://captions.example/vid-1.manual.json3' }],
+                },
+                automatic_captions: {},
+            })
+            .mockResolvedValueOnce({
+                subtitles: {},
+                automatic_captions: {},
+            });
+        const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        mockFetch.mockResolvedValue({
+            ok: true,
+            arrayBuffer: async () => new TextEncoder().encode('{"events":[]}').buffer,
+        } as Response);
+
+        await expect(
+            createProductionYoutubeSource().downloadJson3Captions(
+                [
+                    { videoId: 'vid-1', language: 'en', preferManual: true },
+                    { videoId: 'vid-2', language: 'en', preferManual: true },
+                ],
+                '/tmp/captions',
+            ),
+        ).resolves.toEqual([
+            {
+                videoId: 'vid-1',
+                language: 'en',
+                captionSource: 'manual',
+                filePath: '/tmp/captions/vid-1.manual.en.json3',
+            },
+        ]);
+
+        expect(mockFetch).toHaveBeenCalledTimes(1);
+        expect(mockWriteFile).toHaveBeenCalledTimes(1);
     });
 });

@@ -165,6 +165,9 @@ Run coverage:
 npm run test:coverage
 ```
 
+`npm run test:coverage` enforces global minimums of `80%` branch coverage and
+`85%` statements, functions, and lines.
+
 Run focused test groups:
 
 ```sh

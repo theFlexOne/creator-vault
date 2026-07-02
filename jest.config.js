@@ -16,8 +16,17 @@ module.exports = {
     '!src/lib/youtube/index.ts',
     '!src/index.ts',
     '!src/shared/types.ts',
+    '!src/test-support/**',
   ],
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      statements: 85,
+      functions: 85,
+      lines: 85,
+    },
+  },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },

@@ -115,6 +115,8 @@ npm test -- src/commands src/services
 ---
 
 ### Phase 4 - Schema-Faithful Persistence Tests
+**Status:** Completed 2026-07-02. Added a shared in-memory SQLite helper that loads `src/db/schema.sql`, enables foreign keys, replaced the duplicated hand-written schemas in the persistence suites, and added a foreign-key assertion that proves the canonical schema is active.
+
 **4.1** Create a shared test DB helper that loads `src/db/schema.sql` into an in-memory SQLite database.
 
 **4.2** Enable `PRAGMA foreign_keys = ON` in the shared test DB helper.
@@ -142,6 +144,8 @@ npm test -- src/services src/ingest/__tests__/ingestStorage.test.ts
 ---
 
 ### Phase 5 - Ingest, Source, And Exported Helper Gaps
+**Status:** Completed 2026-07-02. Extended ingest orchestration coverage for missing-channel, batch-failure, caption-mismatch, transcript-backfill, and read-error paths; expanded YouTube source branch coverage; and added compatibility tests for the exported legacy YouTube helpers.
+
 **5.1** Extend ingest orchestration tests for:
 - missing channel profile
 - empty video page
@@ -174,6 +178,8 @@ npm test -- src/ingest src/lib/youtube
 ---
 
 ### Phase 6 - Final Coverage Gate And Docs Sync
+**Status:** Completed 2026-07-02. Enforced the planned global coverage thresholds in Jest, moved the shared SQLite helper into `src/test-support/` so it is treated as a test helper instead of a test suite, updated the README coverage note, completed the plan-status sync, and verified the full compile/test/coverage/diff-check sequence.
+
 **6.1** Run the full verification sequence:
 ```bash
 npm run compile

@@ -1,77 +1,10 @@
-import Database from 'better-sqlite3';
 import { afterAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { createSchemaBackedTestDb, resetSchemaBackedTestDb } from '../../test-support/createSchemaBackedTestDb';
 
 const mockLoggerInfo = jest.fn();
 const mockLoggerWarn = jest.fn();
 
-const mockDb = new Database(':memory:');
-
-mockDb.exec(`
-    CREATE TABLE creators (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE NOT NULL,
-        description TEXT,
-        occupation TEXT,
-        education TEXT
-    );
-
-    CREATE TABLE channels (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        youtube_channel_id TEXT UNIQUE NOT NULL,
-        name TEXT NOT NULL,
-        handle TEXT UNIQUE NOT NULL,
-        description TEXT NOT NULL DEFAULT '',
-        followers INTEGER NOT NULL DEFAULT 0,
-        source_tags TEXT NOT NULL DEFAULT '[]',
-        url TEXT UNIQUE NOT NULL,
-        creator_id INTEGER NOT NULL,
-        FOREIGN KEY (creator_id) REFERENCES creators (id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE videos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        youtube_video_id TEXT UNIQUE NOT NULL,
-        channel_id INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        url TEXT NOT NULL,
-        description TEXT NOT NULL DEFAULT '',
-        duration INTEGER NOT NULL DEFAULT 0,
-        upload_date TEXT,
-        view_count INTEGER NOT NULL DEFAULT 0,
-        categories TEXT NOT NULL DEFAULT '[]',
-        source_tags TEXT NOT NULL DEFAULT '[]',
-        FOREIGN KEY (channel_id) REFERENCES channels (id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE transcripts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        video_id INTEGER NOT NULL,
-        caption_source TEXT NOT NULL,
-        language TEXT NOT NULL,
-        version INTEGER NOT NULL,
-        raw_format TEXT NOT NULL,
-        raw_blob TEXT NOT NULL,
-        checksum TEXT NOT NULL,
-        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (video_id) REFERENCES videos (id) ON DELETE CASCADE,
-        UNIQUE (video_id, caption_source, language, version),
-        CHECK (caption_source IN ('manual', 'automatic')),
-        CHECK (raw_format = 'json3')
-    );
-
-    CREATE TABLE transcript_segments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        transcript_id INTEGER NOT NULL,
-        idx INTEGER NOT NULL,
-        start_ms INTEGER NOT NULL,
-        end_ms INTEGER NOT NULL,
-        text TEXT NOT NULL,
-        speaker TEXT,
-        confidence REAL,
-        FOREIGN KEY (transcript_id) REFERENCES transcripts (id) ON DELETE CASCADE,
-        UNIQUE (transcript_id, idx)
-    );
-`);
+const mockDb = createSchemaBackedTestDb();
 
 jest.mock('../../lib/sqlite/db', () => ({
     __esModule: true,
@@ -89,16 +22,7 @@ import { createProductionIngestStorage } from '../ingestStorage';
 
 describe('createProductionIngestStorage', () => {
     beforeEach(() => {
-        mockDb.exec('DELETE FROM transcript_segments;');
-        mockDb.exec('DELETE FROM transcripts;');
-        mockDb.exec('DELETE FROM videos;');
-        mockDb.exec('DELETE FROM channels;');
-        mockDb.exec('DELETE FROM creators;');
-        mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'transcript_segments';");
-        mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'transcripts';");
-        mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'videos';");
-        mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'channels';");
-        mockDb.exec("DELETE FROM sqlite_sequence WHERE name = 'creators';");
+        resetSchemaBackedTestDb(mockDb);
         mockLoggerInfo.mockClear();
         mockLoggerWarn.mockClear();
     });
