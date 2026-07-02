@@ -1,6 +1,6 @@
 # Current Transcript Schema And Follow-Up
 
-This file name is historical. The current production schema already uses the transcript model documented here. The remaining ingest work is storage wiring and orchestration cleanup, not transcript table creation.
+This note is historical context plus follow-up guidance. The current production schema already uses the transcript model documented here. The remaining ingest work is storage wiring and orchestration cleanup, not transcript table creation.
 
 ## Current Tables
 

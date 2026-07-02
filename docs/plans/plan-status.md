@@ -15,14 +15,20 @@ Status vocabulary:
 - `in-progress`: work has started, but the plan is not the current active plan.
 - `paused`: intentionally stopped, but expected to resume.
 - `blocked`: cannot proceed until an external dependency or decision changes.
-- `completed`: finished recently enough that keeping it listed still helps continuity.
+- `completed`: historical continuity only. Keep it listed only while the context still helps future threads.
+
+Reading rule:
+
+- Start with the `active` row for current work.
+- Treat TODO inventories and follow-up notes as supporting references, not as active plans.
+- Read `completed` rows only when historical context is needed.
 
 ## Running Plan Index
 
 | Plan | Status | Current phase | Next step | Last updated |
 | --- | --- | --- | --- | --- |
 | [Add High-Priority Test Coverage (Expanded Sub-Phases)](./Add%20High-Priority%20Test%20Coverage%20%28Expanded%20Sub-Phases%29.md) | `active` | `4` | Start Phase 4 by replacing hand-written persistence test schemas with a shared helper that loads `src/db/schema.sql`. | `2026-07-01` |
-| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `completed` | `9` | Real ingest implementation, CLI/report finalization, and legacy ingest workflow cleanup are complete; decide separately on ambiguous non-ingest artifacts. | `2026-07-01` |
+| [Real Ingest Implementation Guide Plan With Review Gates](./Real%20Ingest%20Implementation%20Guide%20Plan%20With%20Review%20Gates.md) | `completed` | `9` | Historical reference for the completed ingest rollout. Use only when follow-up work needs implementation background. | `2026-07-01` |
 
 ## Update Rules
 

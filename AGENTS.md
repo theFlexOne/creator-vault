@@ -10,7 +10,7 @@ This repo uses the default triage labels: `needs-triage`, `needs-info`, `ready-f
 
 ### Domain docs
 
-This repo uses a single-context domain-doc layout with one root `CONTEXT.md` and root `docs/adr/`. See `docs/agents/domain.md`.
+This repo uses a single-context domain-doc layout with one root `CONTEXT.md` and selective ADRs under `docs/adr/` for durable architectural decisions. See `docs/agents/domain.md`.
 
 ### Documentation updates
 

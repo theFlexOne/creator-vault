@@ -5,9 +5,11 @@ How the engineering skills should consume this repo's domain documentation when 
 ## Before exploring, read these
 
 - `CONTEXT.md` at the repo root
-- `docs/adr/` for architectural decisions relevant to the area being changed
+- relevant files under `docs/adr/` when the work touches an architectural decision or could conflict with one
 
 If these files do not exist, proceed silently.
+
+Do not preload the entire `docs/adr/` directory for ordinary code, docs, or plan work. Read ADRs selectively when the task needs architecture context.
 
 ## File structure
 

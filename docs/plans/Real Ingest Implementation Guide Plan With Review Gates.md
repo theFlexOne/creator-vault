@@ -1,5 +1,7 @@
 # Context For Later Implementation
 
+> Historical note: this plan is complete and kept only as implementation history for follow-up work.
+
 This plan follows the completed ingest vocabulary cleanup. At the time this plan was written:
 
 - Current public commands are `ingest-channel-profile`, `ingest-channel-videos`, and `ingest-transcripts`.
@@ -8,7 +10,7 @@ This plan follows the completed ingest vocabulary cleanup. At the time this plan
 - The json3 parser is now a pure parser boundary in `src/transcripts/json3Parser.ts`; remaining work should use it rather than treat parser behavior as a TODO.
 - The relevant TODO reference docs are:
   - `docs/plans/Ingest Implementation TODO Inventory.md`
-  - `docs/plans/Future Transcript Schema TODO.md`
+  - `docs/plans/Current Transcript Schema And Follow-Up.md`
 - The current database schema already includes versioned `transcripts` plus `transcript_segments`, so the remaining work should build on that model and remove legacy plain-text assumptions from storage wiring and tests.
 - The current database schema already requires `channels.creator_id`, and creator persistence now lives in `src/repositories/creator.repository.ts`. Production ingest storage uses that boundary for creator-backed channel persistence.
 - There are root-level sample/data files that may be useful fixtures or stray artifacts; they should be reviewed before deletion.

@@ -40,9 +40,12 @@ This command remains independently runnable for backfills and repairs. It does n
 
 ## Planning Boundary
 
-Keep future implementation detail in `docs/plans/`. The most relevant planning docs are:
+Keep future implementation detail in `docs/plans/`. The primary current planning docs for ingest work are:
 
 - `docs/plans/plan-status.md`
 - `docs/plans/Ingest Implementation TODO Inventory.md`
-- `docs/plans/Future Transcript Schema TODO.md`
+
+Historical ingest context remains in:
+
+- `docs/plans/Current Transcript Schema And Follow-Up.md`
 - `docs/plans/Real Ingest Implementation Guide Plan With Review Gates.md`
