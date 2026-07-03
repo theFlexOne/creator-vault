@@ -15,6 +15,7 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 
 - CLI entrypoint: `bin/run.ts`.
 - Command registry: `src/commands/index.ts`.
+- Interactive shell: `src/ui/`.
 - Public ingest module: `src/ingest/index.ts`.
 - Ingest implementation: `src/ingest/`.
 - Ingest source adapter: `src/ingest/youtubeSource.ts`.
@@ -23,17 +24,19 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 - SQLite connection: `src/lib/sqlite/db.ts`.
 - Persistence repositories: `src/repositories/`.
 
-`bin/run.ts` loads environment variables with `dotenv`, registers all yargs commands, and requires at least one command. Ingest commands call the public ingest module; diagnostics call support services.
+`bin/run.ts` loads environment variables with `dotenv`, registers all yargs commands, and requires at least one command. Ingest commands call the public ingest module; diagnostics call support services; `et ui` enters the prompt-driven shell under `src/ui/`, which prompts for arguments and wraps those same public seams with streaming status plus final summaries.
 
 ## Data Flow
 
 1. The user runs `et <command>` or `npm run start -- <command>`.
 2. yargs parses command arguments and options.
-3. Command handlers call `src/ingest` functions or diagnostic services.
+3. Direct command handlers call `src/ingest` functions or diagnostic services, while `et ui` enters the prompt-driven shell.
 4. Ingest workflows resolve identifiers from direct args or one input file.
 5. The ingest source adapter retrieves channel profiles, paged video metadata, and json3 captions.
 6. The ingest module parses json3 captions and calls ingest storage.
 7. Ingest storage calls repositories; write methods run only when `--save` is enabled.
+
+Current UI note: the interactive shell is a guided terminal flow, not a pane-based dashboard. It reuses the direct ingest and diagnostic seams rather than duplicating workflow logic inside the UI layer.
 
 ## What To Read First
 

@@ -51,6 +51,8 @@ After linking, run commands as:
 et <command>
 ```
 
+The CLI also exposes `et ui`, a guided terminal shell. It now supports prompt-driven runs for the existing ingest commands, a chained full ingest pipeline, live terminal status updates, and final summaries while keeping the direct commands available.
+
 ## Current Workflow
 
 The ingest workflow currently runs as a three-step pipeline:
@@ -62,6 +64,25 @@ The ingest workflow currently runs as a three-step pipeline:
 Each ingest command runs in dry-run style by default. Add `--save` to persist results to SQLite.
 
 ## Commands
+
+### `ui`
+
+Launches the guided terminal shell for the planned interactive workflow surface.
+
+```sh
+npm run start -- ui
+et ui
+```
+
+`ui` supports these guided actions:
+
+- ingest channel profile
+- ingest channel videos
+- ingest transcripts
+- run the full ingest pipeline
+- test connection
+
+The v1 UI is still terminal-first rather than a full dashboard. Existing direct commands below remain supported.
 
 ### `ingest-channel-profile <inputs..>`
 

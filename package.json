@@ -75,6 +75,7 @@
     "consola": "^3.2.3",
     "dotenv": "^16.4.5",
     "giget": "^1.2.3",
+    "log-update": "^8.0.0",
     "picocolors": "^1.0.1",
     "prompts": "^2.4.2",
     "yargs": "^17.7.2",

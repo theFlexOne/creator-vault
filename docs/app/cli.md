@@ -14,6 +14,27 @@ et <command>
 
 Current runtime note: command imports prepare repository SQL during startup. If `src/db/db.sqlite` drifts from the repository queries, even `--help` can fail before yargs prints command help. Run `npm run start -- test-connection` after persistence changes; see `docs/app/database.md`.
 
+## `ui`
+
+Launches the guided terminal shell for the interactive CLI surface.
+
+Examples:
+
+```sh
+npm run start -- ui
+et ui
+```
+
+Current UI behavior:
+
+- opens the top-level workflow menu
+- prompts for the same options as the direct ingest commands
+- requires an explicit confirmation before any save-enabled run
+- streams workflow log output with in-place status updates
+- renders a final summary for each run, including the chained full ingest pipeline
+
+Use `Ctrl+C` to cancel the prompt at any time.
+
 ## Shared Input Behavior
 
 Ingest commands accept direct identifiers or one input file.
@@ -102,3 +123,13 @@ npm run start -- test-connection
 ```
 
 Network failure is logged as a warning because restricted or offline environments may still be useful for local development and testing.
+
+## `ui` Full Pipeline
+
+The `run full ingest pipeline` menu action performs these steps in order:
+
+1. `ingest-channel-profile`
+2. `ingest-channel-videos`
+3. `ingest-transcripts`
+
+The UI collects shared inputs once, carries the same dry-run or save choice through the whole flow, and stops early if an earlier step fails materially.
