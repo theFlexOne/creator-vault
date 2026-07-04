@@ -1,16 +1,20 @@
 # Docs Update Checklist
 
-Agents should use this checklist whenever code, terminology, schema, commands, or user-facing behavior changes.
+Agents should use this checklist whenever documentation, terminology, schema, commands, user-facing behavior, or agent-policy guidance changes.
+
+This checklist is for documentation and application-test updates only; it does not authorize edits to application code.
 
 ## Before Editing
 
 - Identify the affected surface: `README.md`, `CONTEXT.md`, `docs/app/`, `docs/guides/`, `docs/plans/`, `docs/plans/plan-status.md`, `docs/postman/`, `docs/agents/`, and relevant source comments or tests.
+- Confirm the requested change does not require application code edits. If it does, stop and hand it off.
 - Determine the current canonical name for the thing that changed.
 - Identify any old names, stale paths, or transitional wording that must be removed or rewritten.
 
 ## Required Updates
 
 - Update current-state docs first so they describe the new behavior, names, and boundaries.
+- Keep the documentation boundary explicit: application tests may be updated, but application code may not be created or edited.
 - Keep planning docs aligned with current terminology even when they still describe future work.
 - Keep historical or migration notes clearly labeled as such; do not let them read like current guidance.
 - Update examples, commands, links, and file references that point at renamed files or renamed concepts.

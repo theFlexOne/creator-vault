@@ -162,7 +162,7 @@ The canonical schema file is `src/db/schema.sql`. See `docs/app/database.md` for
 - `docs/app/`: current application documentation.
 - `docs/guides/`: practical supporting guides.
 - `docs/plans/`: future work, implementation plans, and TODO inventories.
-- `docs/agents/`: agent workflow and issue-tracker instructions.
+- `docs/agents/`: agent workflow and issue-tracker instructions; these docs are policy-only and allow documentation and application-test updates, not application code edits.
 
 Start with `docs/app/overview.md` for the application architecture.
 

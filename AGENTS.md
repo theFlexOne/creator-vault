@@ -16,6 +16,9 @@ This repo uses a single-context domain-doc layout with one root `CONTEXT.md` and
 
 Agents should follow `docs/agents/docs-update-checklist.md` whenever code, terminology, schema, commands, or user-facing behavior changes.
 
+- Agents may update documentation and application tests, but they must not create or edit application code.
+- If a request would require application code changes, stop and hand it off rather than expanding the scope.
+
 - Update current-state docs before or alongside the code change.
 - Keep planning docs aligned with current terminology.
 - Treat future plans as incomplete unless they include a documentation update step.

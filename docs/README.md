@@ -56,3 +56,5 @@ These files are intentionally not app docs. Link to them when documenting known 
 - `docs/agents/`: issue tracker, triage labels, and domain-doc instructions for agents.
 - `docs/agents/docs-update-checklist.md`: required docs-update checklist for code and terminology changes.
 - `docs/postman/`: Postman collections and external-tool inspection artifacts.
+
+Agent-facing docs define the boundary for agent work: documentation and application tests may change, but application code may not.

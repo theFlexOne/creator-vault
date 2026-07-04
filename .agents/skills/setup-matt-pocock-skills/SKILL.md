@@ -12,6 +12,8 @@ Scaffold the per-repo configuration that the engineering skills assume:
 - **Triage labels** — the strings used for the five canonical triage roles
 - **Domain docs** — where `CONTEXT.md` and ADRs live, and the consumer rules for reading them
 
+The generated agent docs should make the boundary explicit: agents may update documentation and application tests, but they may not create or edit application code.
+
 This is a prompt-driven skill, not a deterministic script. Explore, present what you found, confirm with the user, then write.
 
 ## Process
@@ -81,6 +83,7 @@ Show the user a draft of:
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`
 
 Let them edit before writing.
+Make sure any draft agent instructions keep the no-application-code rule visible in the repo-wide agent block.
 
 ### 4. Write
 
