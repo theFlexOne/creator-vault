@@ -37,7 +37,7 @@ const ingestChannelVideos: CommandModule<{}, {
             })
             .option('createChannel', {
                 alias: 'create-channel',
-                describe: 'Create or reuse a creator-backed YouTube channel when saving videos',
+                describe: 'Create or reuse a profile-backed YouTube channel when saving videos',
                 type: 'boolean',
                 default: false,
             })

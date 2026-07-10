@@ -1,29 +1,39 @@
+DROP TABLE IF EXISTS channel_taxonomy_terms;
 DROP TABLE IF EXISTS channel_tags_internal;
+DROP TABLE IF EXISTS profile_taxonomy_terms;
+DROP TABLE IF EXISTS profile_tags_internal;
 DROP TABLE IF EXISTS creator_tags_internal;
 DROP TABLE IF EXISTS transcript_segments;
 DROP TABLE IF EXISTS transcripts;
 DROP TABLE IF EXISTS videos;
+DROP TABLE IF EXISTS profile_bios;
 DROP TABLE IF EXISTS creator_bios;
 DROP TABLE IF EXISTS channels;
+DROP TABLE IF EXISTS profiles;
 DROP TABLE IF EXISTS creators;
+DROP TABLE IF EXISTS taxonomy_terms;
 DROP TABLE IF EXISTS tags_internal;
-CREATE TABLE tags_internal (
+CREATE TABLE taxonomy_terms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
+    slug TEXT NOT NULL UNIQUE,
+    label TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    parent_id INTEGER,
+    FOREIGN KEY (parent_id) REFERENCES taxonomy_terms (id) ON DELETE SET NULL
 );
-CREATE TABLE creators (
+CREATE TABLE profiles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
     description TEXT,
     occupation TEXT,
     education TEXT
 );
-CREATE TABLE creator_bios (
-    creator_id INTEGER PRIMARY KEY,
+CREATE TABLE profile_bios (
+    profile_id INTEGER PRIMARY KEY,
     bio TEXT NOT NULL DEFAULT '',
     occupation TEXT NOT NULL DEFAULT '',
     education TEXT NOT NULL DEFAULT '',
-    FOREIGN KEY (creator_id) REFERENCES creators (id) ON DELETE CASCADE
+    FOREIGN KEY (profile_id) REFERENCES profiles (id) ON DELETE CASCADE
 );
 CREATE TABLE channels (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,13 +42,13 @@ CREATE TABLE channels (
     handle TEXT UNIQUE NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     followers INTEGER NOT NULL DEFAULT 0,
-    source_tags TEXT NOT NULL DEFAULT '[]',
+    source_metadata_tags TEXT NOT NULL DEFAULT '[]',
     url TEXT UNIQUE NOT NULL,
-    creator_id INTEGER NOT NULL,
-    FOREIGN KEY (creator_id) REFERENCES creators (id) ON DELETE CASCADE,
+    profile_id INTEGER NOT NULL,
+    FOREIGN KEY (profile_id) REFERENCES profiles (id) ON DELETE CASCADE,
     CHECK (
-        json_valid(source_tags)
-        AND json_type(source_tags) = 'array'
+        json_valid(source_metadata_tags)
+        AND json_type(source_metadata_tags) = 'array'
     )
 );
 CREATE TABLE videos (
@@ -52,15 +62,15 @@ CREATE TABLE videos (
     upload_date TEXT,
     view_count INTEGER NOT NULL DEFAULT 0,
     categories TEXT NOT NULL DEFAULT '[]',
-    source_tags TEXT NOT NULL DEFAULT '[]',
+    source_metadata_tags TEXT NOT NULL DEFAULT '[]',
     FOREIGN KEY (channel_id) REFERENCES channels (id) ON DELETE CASCADE,
     CHECK (
         json_valid(categories)
         AND json_type(categories) = 'array'
     ),
     CHECK (
-        json_valid(source_tags)
-        AND json_type(source_tags) = 'array'
+        json_valid(source_metadata_tags)
+        AND json_type(source_metadata_tags) = 'array'
     )
 );
 CREATE TABLE transcripts (
@@ -90,17 +100,17 @@ CREATE TABLE transcript_segments (
     FOREIGN KEY (transcript_id) REFERENCES transcripts (id) ON DELETE CASCADE,
     UNIQUE (transcript_id, idx)
 );
-CREATE TABLE creator_tags_internal (
-    creator_id INTEGER NOT NULL,
+CREATE TABLE profile_taxonomy_terms (
+    profile_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL,
-    PRIMARY KEY (creator_id, tag_id),
-    FOREIGN KEY (creator_id) REFERENCES creators (id) ON DELETE CASCADE,
-    FOREIGN KEY (tag_id) REFERENCES tags_internal (id) ON DELETE CASCADE
+    PRIMARY KEY (profile_id, tag_id),
+    FOREIGN KEY (profile_id) REFERENCES profiles (id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES taxonomy_terms (id) ON DELETE CASCADE
 );
-CREATE TABLE channel_tags_internal (
+CREATE TABLE channel_taxonomy_terms (
     channel_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL,
     PRIMARY KEY (channel_id, tag_id),
     FOREIGN KEY (channel_id) REFERENCES channels (id) ON DELETE CASCADE,
-    FOREIGN KEY (tag_id) REFERENCES tags_internal (id) ON DELETE CASCADE
+    FOREIGN KEY (tag_id) REFERENCES taxonomy_terms (id) ON DELETE CASCADE
 );

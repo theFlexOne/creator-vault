@@ -9,7 +9,7 @@ import {
 describe('UI report summaries', () => {
     it('summarizes channel ingest reports', () => {
         const summary = createChannelIngestSummary({
-            title: 'Channel Profile Ingest',
+            title: 'Channel Metadata Ingest',
             ok: true,
             result: {
                 kind: 'channels',

@@ -1,7 +1,20 @@
-import { describe, expect, it } from '@jest/globals';
+import { afterAll, describe, expect, it, jest } from '@jest/globals';
+import { createSchemaBackedTestDb } from '../../test-support/createSchemaBackedTestDb';
+
+const mockDb = createSchemaBackedTestDb();
+
+jest.mock('../../lib/sqlite/db', () => ({
+    __esModule: true,
+    default: mockDb,
+}));
+
 import { createDefaultFutureIngestDependencies } from '../ingest.dependencies';
 
 describe('createDefaultFutureIngestDependencies', () => {
+    afterAll(() => {
+        mockDb.close();
+    });
+
     it('wires default future ingest dependencies without invoking production stubs', async () => {
         const dependencies = createDefaultFutureIngestDependencies();
 

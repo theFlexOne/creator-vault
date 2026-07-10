@@ -1,9 +1,12 @@
-export type TagInternalRow = {
+export type TaxonomyTermRow = {
   id: number
-  name: string
+  slug: string
+  label: string
+  description: string
+  parentId: number | null
 }
 
-export type CreatorRow = {
+export type ProfileRow = {
   id: number
   name: string
   description: string | null
@@ -11,8 +14,8 @@ export type CreatorRow = {
   education: string | null
 }
 
-export type CreatorBioRow = {
-  creatorId: number
+export type ProfileBioRow = {
+  profileId: number
   bio: string
   occupation: string
   education: string
@@ -25,9 +28,9 @@ export type ChannelRow = {
   handle: string
   description: string
   followers: number
-  sourceTags: string[]
+  sourceMetadataTags: string[]
   url: string
-  creatorId: number
+  profileId: number
 }
 
 export type VideoRow = {
@@ -41,7 +44,7 @@ export type VideoRow = {
   uploadDate: string | null
   viewCount: number
   categories: string[]
-  sourceTags: string[]
+  sourceMetadataTags: string[]
 }
 
 export type TranscriptRow = {
@@ -49,27 +52,27 @@ export type TranscriptRow = {
   text: string
 }
 
-export type CreatorTagInternalRow = {
-  creatorId: number
+export type ProfileTaxonomyTermRow = {
+  profileId: number
   tagId: number
 }
 
-export type ChannelTagInternalRow = {
+export type ChannelTaxonomyTermRow = {
   channelId: number
   tagId: number
 }
 
-export type CreatorEntity = CreatorRow & {
-  bio: CreatorBioEntity | null
+export type ProfileEntity = ProfileRow & {
+  bio: ProfileBioEntity | null
   channels: ChannelEntity[]
-  internalTags: string[]
+  taxonomyTerms: string[]
 }
 
-export type CreatorBioEntity = CreatorBioRow
+export type ProfileBioEntity = ProfileBioRow
 
 export type ChannelEntity = ChannelRow & {
   videos: VideoEntity[]
-  internalTags: string[]
+  taxonomyTerms: string[]
 }
 
 export type VideoEntity = VideoRow & {
@@ -78,4 +81,4 @@ export type VideoEntity = VideoRow & {
 
 export type TranscriptEntity = TranscriptRow
 
-export type TagInternalEntity = TagInternalRow
+export type TaxonomyTermEntity = TaxonomyTermRow

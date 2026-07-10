@@ -24,6 +24,7 @@ These files are intentionally narrower than `docs/app/`. They explain why a dura
 Use `docs/guides/` for supporting how-to material that helps maintain the app but is not the canonical current-state description.
 
 - `guides/better-sqlite.md`: project-specific `better-sqlite3` practices adapted from the older root guide.
+- `guides/profile-taxonomy-migration.md`: full no-gates migration plan for the profile-centric taxonomy model.
 
 Any future plan that changes behavior, terminology, schema, or command surface should include a documentation update step that updates the relevant current-state docs in `docs/app/`, `README.md`, or other affected documentation.
 

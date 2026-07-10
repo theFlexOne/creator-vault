@@ -23,7 +23,7 @@ jest.mock('../../shared/logger', () => ({
 
 import { getVideosMissingTranscripts, upsertVideoInfo } from '../../repositories/video.repository';
 import { upsertChannelInfo } from '../../repositories/channel.repository';
-import { findOrCreateCreatorByName } from '../../repositories/creator.repository';
+import { findOrCreateProfileByName } from '../../repositories/profile.repository';
 import {
     findLatestTranscriptVersion,
     saveTranscriptSegments,
@@ -38,12 +38,12 @@ type ChannelRow = {
     handle: string;
     description: string;
     followers: number;
-    source_tags: string;
+    source_metadata_tags: string;
     url: string;
-    creator_id: number;
+    profile_id: number;
 };
 
-type CreatorRow = {
+type ProfileRow = {
     id: number;
     name: string;
     description: string | null;
@@ -62,7 +62,7 @@ type VideoRow = {
     upload_date: string | null;
     view_count: number;
     categories: string;
-    source_tags: string;
+    source_metadata_tags: string;
 };
 
 type TranscriptRow = {
@@ -100,35 +100,35 @@ describe('db.service upserts', () => {
         mockDb.close();
     });
 
-    it('creates a creator by name and returns its id', () => {
-        const creator = findOrCreateCreatorByName('Alpha');
+    it('creates a profile by name and returns its id', () => {
+        const profile = findOrCreateProfileByName('Alpha');
 
-        expect(creator).toEqual({
+        expect(profile).toEqual({
             id: 1,
             name: 'Alpha',
         });
-        expect(mockDb.prepare('SELECT * FROM creators').get()).toEqual({
+        expect(mockDb.prepare('SELECT * FROM profiles').get()).toEqual({
             id: 1,
             name: 'Alpha',
             description: null,
             occupation: null,
             education: null,
-        } satisfies CreatorRow);
+        } satisfies ProfileRow);
     });
 
-    it('reuses an existing creator by name', () => {
-        const first = findOrCreateCreatorByName('Alpha');
-        const second = findOrCreateCreatorByName('Alpha');
+    it('reuses an existing profile by name', () => {
+        const first = findOrCreateProfileByName('Alpha');
+        const second = findOrCreateProfileByName('Alpha');
 
         expect(second).toEqual(first);
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 1 });
     });
 
-    it('rejects missing creator names', () => {
-        expect(() => findOrCreateCreatorByName('   ')).toThrow('Cannot create or reuse creator without name.');
+    it('rejects missing profile names', () => {
+        expect(() => findOrCreateProfileByName('   ')).toThrow('Cannot create or reuse profile without name.');
     });
 
-    it('inserts a new channel, populates creator_id, and returns its id', () => {
+    it('inserts a new channel, populates profile_id, and returns its id', () => {
         const id = upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
@@ -149,11 +149,11 @@ describe('db.service upserts', () => {
             handle: '@alpha',
             description: 'Alpha description',
             followers: 12,
-            source_tags: '["news","updates"]',
+            source_metadata_tags: '["news","updates"]',
             url: 'https://www.youtube.com/@alpha',
-            creator_id: 1,
+            profile_id: 1,
         });
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 1 });
         expect(mockLoggerInfo).toHaveBeenCalledWith('Channel "Alpha" (ID: 1) upserted.');
     });
 
@@ -185,15 +185,15 @@ describe('db.service upserts', () => {
             handle: '@alpha',
             description: 'Alpha description',
             followers: 12,
-            source_tags: '["news","updates"]',
+            source_metadata_tags: '["news","updates"]',
             url: 'https://www.youtube.com/@alpha/videos',
-            creator_id: 1,
+            profile_id: 1,
         });
         expect(mockDb.prepare('SELECT COUNT(*) AS count FROM channels').get()).toEqual({ count: 1 });
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 1 });
     });
 
-    it('uses the existing creator when another channel save has the same name', () => {
+    it('uses the existing profile when another channel save has the same name', () => {
         upsertChannelInfo({
             youtubeChannelId: 'UC123',
             name: 'Alpha',
@@ -209,16 +209,16 @@ describe('db.service upserts', () => {
         });
 
         expect(secondId).toBe(2);
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
-        expect(mockDb.prepare('SELECT creator_id FROM channels WHERE handle = ?').get('@alpha-two')).toEqual({
-            creator_id: 1,
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 1 });
+        expect(mockDb.prepare('SELECT profile_id FROM channels WHERE handle = ?').get('@alpha-two')).toEqual({
+            profile_id: 1,
         });
     });
 
     it('enforces real-schema foreign keys for channel rows', () => {
         expect(() =>
             mockDb.prepare(
-                'INSERT INTO channels (youtube_channel_id, name, handle, url, creator_id) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO channels (youtube_channel_id, name, handle, url, profile_id) VALUES (?, ?, ?, ?, ?)',
             ).run('UC999', 'Orphan Channel', '@orphan', 'https://www.youtube.com/@orphan', 999),
         ).toThrow(/FOREIGN KEY constraint failed/);
     });
@@ -236,7 +236,7 @@ describe('db.service upserts', () => {
                 name: 'Alpha',
             } as any),
         ).toThrow('Cannot upsert channel without name, handle, and url.');
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 0 });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 0 });
     });
 
     it('upserts videos by youtube_video_id and assigns database id', () => {
@@ -278,7 +278,7 @@ describe('db.service upserts', () => {
             upload_date: '20250101',
             view_count: 101,
             categories: '["cat"]',
-            source_tags: '["tag"]',
+            source_metadata_tags: '["tag"]',
         });
         expect(row).not.toHaveProperty('transcript');
     });
@@ -323,7 +323,7 @@ describe('db.service upserts', () => {
             duration: 10,
             upload_date: '20240101',
             categories: '["cat-a"]',
-            source_tags: '["tag-a"]',
+            source_metadata_tags: '["tag-a"]',
         });
     });
 

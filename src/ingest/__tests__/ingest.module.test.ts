@@ -4,7 +4,7 @@ import type { CreateIngestModuleDependencies } from '../ingest.module';
 import type { ChannelVideosPageRange } from '../youtubeSource';
 import type {
     SaveTranscriptVersionInput,
-    StubCreatorInput,
+    StubProfileInput,
     TranscriptSegmentInput,
 } from '../ingestStorage';
 import type { ChannelRecord, VideoRecord } from '../../types/ingestion.types';
@@ -29,7 +29,7 @@ const createDependencies = (): CreateIngestModuleDependencies => ({
         downloadJson3Captions: jest.fn(async () => []),
     },
     storage: {
-        findOrCreateStubCreator: jest.fn(async (input: StubCreatorInput) => ({ creatorId: 1, name: input.name })),
+        findOrCreateStubProfile: jest.fn(async (input: StubProfileInput) => ({ profileId: 1, name: input.name })),
         findOrCreateYoutubeChannel: jest.fn(async (channel: ChannelRecord) => ({
             channelId: 1,
             youtubeChannelId: channel.youtubeChannelId,
@@ -69,7 +69,7 @@ describe('createIngestModule', () => {
         jest.clearAllMocks();
     });
 
-    it('reports missing channel profiles during channel profile ingestion', async () => {
+    it('reports missing channel metadata during channel metadata ingestion', async () => {
         const dependencies = createDependencies();
         jest.mocked(dependencies.inputLoader.resolveIdentifiers).mockResolvedValue(['@alpha']);
         jest.mocked(dependencies.youtubeSource.fetchChannelProfile).mockResolvedValue(undefined);
@@ -90,7 +90,7 @@ describe('createIngestModule', () => {
                 {
                     scope: 'channel',
                     identifier: '@alpha',
-                    message: 'Failed to ingest channel profile for @alpha.',
+                    message: 'Failed to ingest channel metadata for @alpha.',
                 },
             ],
         });
@@ -98,7 +98,7 @@ describe('createIngestModule', () => {
         expect(dependencies.storage.findOrCreateYoutubeChannel).not.toHaveBeenCalled();
     });
 
-    it('reports channel profile fetch errors', async () => {
+    it('reports channel metadata fetch errors', async () => {
         const dependencies = createDependencies();
         const error = new Error('profile failed');
         jest.mocked(dependencies.inputLoader.resolveIdentifiers).mockResolvedValue(['@alpha']);
@@ -123,7 +123,7 @@ describe('createIngestModule', () => {
         );
     });
 
-    it('orchestrates channel profile ingestion through source and storage dependencies', async () => {
+    it('orchestrates channel metadata ingestion through source and storage dependencies', async () => {
         const dependencies = createDependencies();
         const channel = {
             youtubeChannelId: 'UC123',
@@ -159,7 +159,7 @@ describe('createIngestModule', () => {
         expect(dependencies.storage.findOrCreateYoutubeChannel).toHaveBeenCalledWith(channel, { createChannel: true });
     });
 
-    it('does not write channel profiles when save is false', async () => {
+    it('does not write channel metadata when save is false', async () => {
         const dependencies = createDependencies();
         const channel = {
             youtubeChannelId: 'UC123',
@@ -399,7 +399,7 @@ describe('createIngestModule', () => {
         expect(dependencies.storage.saveVideos).not.toHaveBeenCalled();
     });
 
-    it('reports missing channel profiles during channel video ingestion', async () => {
+    it('reports missing channel metadata during channel video ingestion', async () => {
         const dependencies = createDependencies();
         jest.mocked(dependencies.inputLoader.resolveIdentifiers).mockResolvedValue(['@alpha']);
         jest.mocked(dependencies.youtubeSource.fetchChannelProfile).mockResolvedValue(undefined);
@@ -418,7 +418,7 @@ describe('createIngestModule', () => {
                 {
                     scope: 'channel',
                     identifier: '@alpha',
-                    message: 'Failed to ingest channel profile for: @alpha',
+                    message: 'Failed to ingest channel metadata for: @alpha',
                 },
             ],
             channelReports: [
@@ -429,7 +429,7 @@ describe('createIngestModule', () => {
                         {
                             scope: 'channel',
                             identifier: '@alpha',
-                            message: 'Failed to ingest channel profile for: @alpha',
+                            message: 'Failed to ingest channel metadata for: @alpha',
                         },
                     ],
                 },

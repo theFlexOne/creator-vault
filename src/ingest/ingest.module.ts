@@ -93,9 +93,9 @@ export function createIngestModule(dependencies: CreateIngestModuleDependencies)
                         report.failures.push({
                             scope: 'channel',
                             identifier,
-                            message: `Failed to ingest channel profile for ${identifier}.`,
+                            message: `Failed to ingest channel metadata for ${identifier}.`,
                         });
-                        dependencies.reporter.error(`Failed to ingest channel profile for ${identifier}.`);
+                        dependencies.reporter.error(`Failed to ingest channel metadata for ${identifier}.`);
                         continue;
                     }
 
@@ -163,11 +163,11 @@ export function createIngestModule(dependencies: CreateIngestModuleDependencies)
                         const failure = {
                             scope: 'channel' as const,
                             identifier,
-                            message: `Failed to ingest channel profile for: ${identifier}`,
+                            message: `Failed to ingest channel metadata for: ${identifier}`,
                         };
                         channelReport.failures.push(failure);
                         report.failures.push(failure);
-                        dependencies.reporter.warn(`Failed to ingest channel profile for: ${identifier}`);
+                        dependencies.reporter.warn(`Failed to ingest channel metadata for: ${identifier}`);
                         continue;
                     }
                     channelReport.fetchedChannel = channel;
@@ -357,7 +357,7 @@ export function createIngestModule(dependencies: CreateIngestModuleDependencies)
                     if (!channel) {
                         report.missingChannels.push(identifier);
                         report.skippedRecords += 1;
-                        dependencies.reporter.error(`Channel "${identifier}" not found in the database. Please add it first using ingest-channel-profile.`);
+                        dependencies.reporter.error(`Channel "${identifier}" not found in the database. Please add its channel metadata first using ingest-channel-profile.`);
                         continue;
                     }
 

@@ -31,14 +31,14 @@ describe('createProductionIngestStorage', () => {
         mockDb.close();
     });
 
-    it('creates and reuses stub creators by name', async () => {
+    it('creates and reuses stub profiles by name', async () => {
         const storage = createProductionIngestStorage();
 
-        await expect(storage.findOrCreateStubCreator({ name: 'Alpha', channelName: 'Alpha Channel' }))
-            .resolves.toEqual({ creatorId: 1, name: 'Alpha' });
-        await expect(storage.findOrCreateStubCreator({ name: 'Alpha', channelName: 'Alpha Channel' }))
-            .resolves.toEqual({ creatorId: 1, name: 'Alpha' });
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+        await expect(storage.findOrCreateStubProfile({ name: 'Alpha', channelName: 'Alpha Channel' }))
+            .resolves.toEqual({ profileId: 1, name: 'Alpha' });
+        await expect(storage.findOrCreateStubProfile({ name: 'Alpha', channelName: 'Alpha Channel' }))
+            .resolves.toEqual({ profileId: 1, name: 'Alpha' });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 1 });
     });
 
     it('skips missing channels when createChannel is false', async () => {
@@ -49,11 +49,11 @@ describe('createProductionIngestStorage', () => {
             handle: '@alpha',
         }, { createChannel: false })).resolves.toBeUndefined();
 
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 0 });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 0 });
         expect(mockDb.prepare('SELECT COUNT(*) AS count FROM channels').get()).toEqual({ count: 0 });
     });
 
-    it('creates and updates YouTube channels through creator-backed storage', async () => {
+    it('creates and updates YouTube channels through profile-backed storage', async () => {
         const storage = createProductionIngestStorage();
 
         await expect(storage.findOrCreateYoutubeChannel({
@@ -83,7 +83,7 @@ describe('createProductionIngestStorage', () => {
             handle: '@alpha',
         });
 
-        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM creators').get()).toEqual({ count: 1 });
+        expect(mockDb.prepare('SELECT COUNT(*) AS count FROM profiles').get()).toEqual({ count: 1 });
         expect(mockDb.prepare('SELECT * FROM channels WHERE handle = ?').get('@alpha')).toMatchObject({
             id: 1,
             youtube_channel_id: 'UC123',
@@ -91,7 +91,7 @@ describe('createProductionIngestStorage', () => {
             description: 'Updated description',
             followers: 12,
             url: 'https://www.youtube.com/@alpha/videos',
-            creator_id: 1,
+            profile_id: 1,
         });
     });
 

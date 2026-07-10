@@ -40,7 +40,7 @@ describe('UI workflows', () => {
         );
     }
 
-    it('dispatches the channel profile workflow through the task runner', async () => {
+    it('dispatches the channel metadata workflow through the task runner', async () => {
         const promptForChannelProfileWorkflow = jest.fn(async () => ({
             kind: 'submit' as const,
             value: { inputs: ['@alpha'], save: true },
@@ -196,7 +196,7 @@ describe('UI workflows', () => {
         expect(runUiTask).toHaveBeenCalledTimes(3);
     });
 
-    it('stops the full pipeline after a material profile failure', async () => {
+    it('stops the full pipeline after a material channel metadata failure', async () => {
         const runIngestChannelVideos = jest.fn();
         const runIngestTranscripts = jest.fn();
 

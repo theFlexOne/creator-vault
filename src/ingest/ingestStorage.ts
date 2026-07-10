@@ -1,8 +1,8 @@
 import type { ChannelRecord, VideoRecord } from '../types/ingestion.types';
-import { findOrCreateCreatorByName } from '../repositories/creator.repository';
+import { findOrCreateProfileByName } from '../repositories/profile.repository';
 import {
     findYoutubeChannelByIdentity,
-    upsertYoutubeChannelForCreator,
+    upsertYoutubeChannelForProfile,
 } from '../repositories/channel.repository';
 import {
     getVideosMissingTranscripts,
@@ -19,13 +19,13 @@ export type MissingChannelPolicy = {
     createChannel: boolean;
 };
 
-export type StubCreatorInput = {
+export type StubProfileInput = {
     name: string;
     channelName: string;
 };
 
-export type StoredCreator = {
-    creatorId: number;
+export type StoredProfile = {
+    profileId: number;
     name: string;
 };
 
@@ -92,7 +92,7 @@ export type VideoNeedingTranscript = {
 };
 
 export interface IngestStorage {
-    findOrCreateStubCreator(input: StubCreatorInput): Promise<StoredCreator>;
+    findOrCreateStubProfile(input: StubProfileInput): Promise<StoredProfile>;
     findOrCreateYoutubeChannel(
         channel: ChannelRecord,
         policy: MissingChannelPolicy,
@@ -104,11 +104,11 @@ export interface IngestStorage {
     findVideosMissingTranscripts(channelId: number, limit?: number): Promise<VideoNeedingTranscript[]>;
 }
 
-function resolveStubCreatorName(input: StubCreatorInput): string {
+function resolveStubProfileName(input: StubProfileInput): string {
     const name = input.name.trim() || input.channelName.trim();
 
     if (!name) {
-        throw new Error('Cannot create or reuse stub creator without name or channelName.');
+        throw new Error('Cannot create or reuse stub profile without name or channelName.');
     }
 
     return name;
@@ -137,17 +137,17 @@ function toTranscriptVersionRecord(row: TranscriptVersionRow): TranscriptVersion
 }
 
 export function createProductionIngestStorage(): IngestStorage {
-    const findOrCreateStubCreator = async (input: StubCreatorInput): Promise<StoredCreator> => {
-        const creator = findOrCreateCreatorByName(resolveStubCreatorName(input));
+    const findOrCreateStubProfile = async (input: StubProfileInput): Promise<StoredProfile> => {
+        const profile = findOrCreateProfileByName(resolveStubProfileName(input));
 
         return {
-            creatorId: creator.id,
-            name: creator.name,
+            profileId: profile.id,
+            name: profile.name,
         };
     };
 
     return {
-        findOrCreateStubCreator,
+        findOrCreateStubProfile,
 
         async findOrCreateYoutubeChannel(channel, policy) {
             if (!policy.createChannel) {
@@ -155,11 +155,11 @@ export function createProductionIngestStorage(): IngestStorage {
                 return existingChannel ? toStoredChannel(existingChannel) : undefined;
             }
 
-            const creator = await findOrCreateStubCreator({
+            const profile = await findOrCreateStubProfile({
                 name: channel.name ?? '',
                 channelName: channel.name ?? '',
             });
-            const channelId = upsertYoutubeChannelForCreator(channel, creator.creatorId);
+            const channelId = upsertYoutubeChannelForProfile(channel, profile.profileId);
             const storedChannel = findYoutubeChannelByIdentity(channel);
 
             return toStoredChannel({

@@ -48,7 +48,7 @@ If file parsing fails, the command logs the error and resolves to an empty input
 
 ## `ingest-channel-profile <inputs..>`
 
-Fetches channel profile data through the current channel profile workflow.
+Fetches channel metadata through the current channel metadata workflow.
 
 Examples:
 
@@ -60,7 +60,7 @@ npm run start -- ingest-channel-profile channels.txt --save
 
 Options:
 
-- `--save`, `-s`: save channel profile data to SQLite. Default: `false`.
+- `--save`, `-s`: save channel metadata to SQLite. Default: `false`.
 
 Without `--save`, channel data is logged but not persisted.
 
@@ -81,11 +81,11 @@ Options:
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
 - `--batch <number>`: `/videos` metadata page size. Default: `10`.
 - `--save`, `-s`: save video metadata to SQLite. Default: `false`.
-- `--create-channel`: create or reuse a creator-backed YouTube channel when saving. Default: `false`.
+- `--create-channel`: create or reuse a profile-backed YouTube channel when saving. Default: `false`.
 
 `--limit` and `--batch` must be greater than zero.
 
-When `--save` and `--create-channel` are enabled, the command creates or reuses a creator-backed YouTube channel, saves video metadata, and stores new transcript versions plus segments for downloaded json3 captions. With `--save` alone, channels missing from SQLite are skipped. Without `--save`, it retrieves channel profile and video metadata but does not write to SQLite or download captions.
+When `--save` and `--create-channel` are enabled, the command creates or reuses a profile-backed YouTube channel, saves video metadata, and stores new transcript versions plus segments for downloaded json3 captions. With `--save` alone, channels missing from SQLite are skipped. Without `--save`, it retrieves channel metadata and video metadata but does not write to SQLite or download captions.
 
 ## `ingest-transcripts <inputs..>`
 
@@ -106,7 +106,7 @@ Options:
 
 `--limit` must be greater than zero.
 
-The command looks up the channel in SQLite, selects stored videos missing transcript rows, downloads preferred English json3 captions, parses them, and stores transcript versions plus segments only when `--save` is enabled. It does not create channels, retrieve channel profile data, or retrieve video metadata again.
+The command looks up the channel in SQLite, selects stored videos missing transcript rows, downloads preferred English json3 captions, parses them, and stores transcript versions plus segments only when `--save` is enabled. It does not create channels, retrieve channel metadata, or retrieve video metadata again.
 
 ## `test-connection`
 
@@ -123,6 +123,39 @@ npm run start -- test-connection
 ```
 
 Network failure is logged as a warning because restricted or offline environments may still be useful for local development and testing.
+
+## `taxonomy`
+
+Manages curated taxonomy terms and profile-to-taxonomy assignments outside ingest.
+
+### `taxonomy create-term <slug> <label>`
+
+Creates or updates a taxonomy term.
+
+Options:
+
+- `--description <text>`: optional taxonomy term description. Default: empty string.
+- `--parent <slug>`: optional parent taxonomy slug.
+
+### `taxonomy list-terms`
+
+Lists stored taxonomy terms in slug order.
+
+### `taxonomy assign-profile-term <profile> <term>`
+
+Assigns a taxonomy term to a profile. `profile` may be a profile id or exact profile name. `term` may be a taxonomy term id or slug.
+
+### `taxonomy remove-profile-term <profile> <term>`
+
+Removes a taxonomy term from a profile. `profile` may be a profile id or exact profile name. `term` may be a taxonomy term id or slug.
+
+## `profile`
+
+Inspects stored profiles outside ingest.
+
+### `profile show <identifier>`
+
+Returns a stored profile with its taxonomy terms and channel metadata. `identifier` may be a profile id or exact profile name.
 
 ## `ui` Full Pipeline
 

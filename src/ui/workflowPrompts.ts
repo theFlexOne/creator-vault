@@ -98,12 +98,12 @@ export async function promptForChannelProfileWorkflow(): Promise<
         return { kind: 'cancel' };
     }
 
-    const save = await askConfirm('Persist channel profile results to SQLite?', false);
+    const save = await askConfirm('Persist channel metadata results to SQLite?', false);
     if (save === undefined) {
         return { kind: 'cancel' };
     }
 
-    const saveDecision = await confirmSaveIfNeeded(save, 'channel profile ingest');
+    const saveDecision = await confirmSaveIfNeeded(save, 'channel metadata ingest');
     if (saveDecision === 'cancel') {
         return { kind: 'cancel' };
     }
@@ -154,7 +154,7 @@ export async function promptForChannelVideosWorkflow(): Promise<
 
     if (save) {
         const createChannelResponse = await askConfirm(
-            'Create or reuse a creator-backed channel if one is missing?',
+            'Create or reuse a profile-backed channel if one is missing?',
             false,
         );
         if (createChannelResponse === undefined) {
@@ -269,7 +269,7 @@ export async function promptForFullPipelineWorkflow(): Promise<
 
     if (save) {
         const createChannelResponse = await askConfirm(
-            'Create or reuse a creator-backed channel during the video step if one is missing?',
+            'Create or reuse a profile-backed channel during the video step if one is missing?',
             false,
         );
         if (createChannelResponse === undefined) {

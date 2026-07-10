@@ -12,6 +12,15 @@ This file is the shared source of truth for AI assistants working in this reposi
 - Allowed work surfaces for this scaffold: tests, docs, agent-context files, and helpful inline comments when they are explicitly useful.
 - If a task would require changing application source to complete, stop and hand off the needed change instead of making the edit.
 
+### Named Exception: `Plan Implementer`
+
+- The custom agent `Plan Implementer` is excluded from the default application-source edit restriction in this repository.
+- That exception applies only when the active agent name exactly matches `Plan Implementer`.
+- `Plan Implementer` may modify application source, schema, seeds, tests, docs, and agent-context files only when the user explicitly invokes that agent.
+- `Plan Implementer` must stay within the approved plan scope, prefer the smallest coherent edit slices, and validate after each slice.
+- `Plan Implementer` must not be invoked as a subagent by other agents.
+- All other agents remain bound by the default read-only restriction for application source.
+
 ## Repo Priorities
 
 - Optimize first for code review, debugging, refactor planning, test writing, and docs or architecture lookup.

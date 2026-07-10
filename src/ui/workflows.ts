@@ -72,12 +72,12 @@ async function runChannelProfileTask(
     }
 
     if (promptResult.kind === 'aborted-save') {
-        printSaveCancellation(output, 'channel profile ingest');
+        printSaveCancellation(output, 'channel metadata ingest');
         return;
     }
 
     const task = await dependencies.runUiTask<ChannelIngestReport>({
-        title: 'Channel Profile Ingest',
+        title: 'Channel Metadata Ingest',
         output,
         run: () => dependencies.runIngestChannelProfile(
             promptResult.value.inputs,
@@ -179,7 +179,7 @@ function findPipelineStop(
     if (task.result?.kind === 'channels' && isMaterialChannelFailure(task.result)) {
         return {
             stoppedAfter: task.title,
-            stopReason: 'No channel profiles were fetched successfully.',
+            stopReason: 'No channel metadata records were fetched successfully.',
         };
     }
 
@@ -212,12 +212,12 @@ async function runFullPipelineTask(
     const steps: PipelineStepSummary[] = [];
 
     const profileTask = await dependencies.runUiTask<ChannelIngestReport>({
-        title: 'Full Pipeline: Channel Profile Ingest',
+        title: 'Full Pipeline: Channel Metadata Ingest',
         output,
         run: () => dependencies.runIngestChannelProfile(inputs, save),
     });
     steps.push({
-        action: 'Channel profile ingest',
+        action: 'Channel metadata ingest',
         summary: createChannelIngestSummary(profileTask),
     });
 

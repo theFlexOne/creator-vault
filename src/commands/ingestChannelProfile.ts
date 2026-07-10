@@ -8,7 +8,7 @@ type IngestChannelProfileCommand = CommandModule<{}, {
 
 const ingestChannelProfile: IngestChannelProfileCommand = {
     command: 'ingest-channel-profile <inputs..>',
-    describe: 'Ingests YouTube channel profile data using the current channel profile workflow.',
+    describe: 'Ingests YouTube channel metadata using the current channel metadata workflow.',
 
     builder: (yargs) => {
         return yargs

@@ -1,11 +1,11 @@
 # Application Overview
 
-Creator Vault is a TypeScript CLI for collecting YouTube creator data into a local SQLite database. The domain is creator-centric: a Creator owns platform-specific publishing surfaces, and the active platform surface is a YouTube Channel.
+Creator Vault is a TypeScript CLI for collecting YouTube channel, video, and transcript data into a local SQLite database. The domain is profile-centric: a Profile owns platform-specific publishing surfaces, and the active platform surface is a YouTube Channel.
 
 ## Main Concepts
 
-- Creator: the cross-platform identity tracked by the project.
-- YouTube Channel: the YouTube publishing surface owned by one creator.
+- Profile: the cross-platform identity tracked by the project.
+- YouTube Channel: the YouTube publishing surface owned by one profile.
 - Video: the primary YouTube content unit tracked under a channel.
 - Transcript: the text record attached to a specific video.
 
@@ -32,7 +32,7 @@ Use `CONTEXT.md` as the domain glossary when naming issues, docs, tests, and cod
 2. yargs parses command arguments and options.
 3. Direct command handlers call `src/ingest` functions or diagnostic services, while `et ui` enters the prompt-driven shell.
 4. Ingest workflows resolve identifiers from direct args or one input file.
-5. The ingest source adapter retrieves channel profiles, paged video metadata, and json3 captions.
+5. The ingest source adapter retrieves channel metadata, paged video metadata, and json3 captions.
 6. The ingest module parses json3 captions and calls ingest storage.
 7. Ingest storage calls repositories; write methods run only when `--save` is enabled.
 

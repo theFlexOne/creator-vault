@@ -7,7 +7,7 @@ export type SocialPlatformDTO = {
     name?: string
 }
 
-export type CreatorDTO = {
+export type ProfileDTO = {
     id?: number
     name?: string
     description?: string
@@ -15,19 +15,19 @@ export type CreatorDTO = {
     education?: string
 }
 
-export type CreatorSocialDTO = {
-    creatorId?: number
-    creatorName?: string
+export type ProfileSocialDTO = {
+    profileId?: number
+    profileName?: string
     platform?: string
     url?: string
     handle?: string
 }
 
-export type CreatorChannelDTO = {
-    creatorId?: number
+export type ProfileChannelDTO = {
+    profileId?: number
     channelId?: number
 
     // Optional app-facing aliases.
-    creatorName?: string
+    profileName?: string
     channelHandle?: string
 }

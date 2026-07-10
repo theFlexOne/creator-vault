@@ -1,6 +1,6 @@
 # Creator Vault
 
-Creator Vault is a TypeScript CLI for collecting YouTube creator data into a local SQLite database. The app focuses on YouTube channel profiles, channel video metadata, and transcripts.
+Creator Vault is a TypeScript CLI for collecting YouTube channel, video, and transcript data into a local SQLite database organized around profile identities. The app focuses on YouTube channel metadata, channel video metadata, and transcripts.
 
 The CLI binary is named `et`.
 
@@ -57,11 +57,13 @@ The CLI also exposes `et ui`, a guided terminal shell. It now supports prompt-dr
 
 The ingest workflow currently runs as a three-step pipeline:
 
-1. Ingest channel profile data.
+1. Ingest channel metadata.
 2. Ingest channel video metadata and, when saving, json3 transcript versions and segments.
 3. Backfill transcripts for stored videos missing transcript rows.
 
 Each ingest command runs in dry-run style by default. Add `--save` to persist results to SQLite.
+
+Manual taxonomy stays outside ingest. Use the direct `taxonomy` commands to create terms and assign them to profiles, and use `profile show` to inspect profile taxonomy separately from channel source metadata tags.
 
 ## Commands
 
@@ -76,7 +78,7 @@ et ui
 
 `ui` supports these guided actions:
 
-- ingest channel profile
+- ingest channel metadata
 - ingest channel videos
 - ingest transcripts
 - run the full ingest pipeline
@@ -86,7 +88,7 @@ The v1 UI is still terminal-first rather than a full dashboard. Existing direct 
 
 ### `ingest-channel-profile <inputs..>`
 
-Fetches YouTube channel profile data.
+Fetches YouTube channel metadata.
 
 ```sh
 npm run start -- ingest-channel-profile @example
@@ -97,7 +99,7 @@ Inputs may be YouTube URLs, handles, channel IDs, or a single input file. A `.tx
 
 Options:
 
-- `--save`, `-s`: persist channel profile data.
+- `--save`, `-s`: persist channel metadata.
 
 ### `ingest-channel-videos <inputs..>`
 
@@ -113,7 +115,7 @@ Options:
 - `--limit <number>`: maximum videos to process per channel. Default: `100`.
 - `--batch <number>`: `/videos` metadata page size. Default: `10`.
 - `--save`, `-s`: persist video metadata and available json3 transcripts.
-- `--create-channel`: create or reuse a creator-backed YouTube channel when saving. Default: `false`.
+- `--create-channel`: create or reuse a profile-backed YouTube channel when saving. Default: `false`.
 
 When saving without `--create-channel`, the command skips channels that are not already in SQLite.
 
@@ -139,6 +141,27 @@ Checks the SQLite connection, the YouTube downloader executable, and basic YouTu
 
 ```sh
 npm run start -- test-connection
+```
+
+### `taxonomy`
+
+Manages curated taxonomy terms and profile-to-taxonomy assignments.
+
+```sh
+npm run start -- taxonomy create-term apologetics Apologetics
+npm run start -- taxonomy create-term presuppositional Presuppositional --parent apologetics
+npm run start -- taxonomy list-terms
+npm run start -- taxonomy assign-profile-term "Alpha" apologetics
+npm run start -- taxonomy remove-profile-term "Alpha" apologetics
+```
+
+### `profile`
+
+Shows a stored profile with its taxonomy terms and channel metadata.
+
+```sh
+npm run start -- profile show "Alpha"
+npm run start -- profile show 1
 ```
 
 ## Database
@@ -197,7 +220,8 @@ npm run test:lib
 
 ## Current Notes
 
-- `ingest-channel-videos` now combines channel profile, paged video metadata, and json3 transcript ingestion when `--save` is enabled.
+- `ingest-channel-videos` now combines channel metadata, paged video metadata, and json3 transcript ingestion when `--save` is enabled.
 - Transcript storage now uses versioned json3 transcript rows in `transcripts` plus normalized segment rows in `transcript_segments`.
-- Channel and video persistence now align with `source_tags`, and channel profile saves use the creator repository to create or reuse a stub Creator keyed by the channel name.
+- Channel and video persistence now align with `source_metadata_tags`, while manual taxonomy stays separate in `taxonomy_terms`, `profile_taxonomy_terms`, and `channel_taxonomy_terms`.
+- Channel metadata saves use the profile repository to create or reuse a stub Profile keyed by the channel name.
 - Because repository SQL is prepared during command import, any future schema/query drift can still block startup. Use `npm run start -- test-connection` after persistence changes.

@@ -64,7 +64,7 @@ export function createChannelIngestSummary(
         title: task.title,
         status,
         lines: [
-            `Resolved ${report.resolved.length} inputs and fetched ${report.fetched.length} channel profiles.`,
+            `Resolved ${report.resolved.length} inputs and fetched ${report.fetched.length} channel metadata records.`,
             report.save
                 ? `Saved ${report.savedCount} channels to SQLite.`
                 : `Dry run only. Skipped ${report.skippedRecords} writes.`,

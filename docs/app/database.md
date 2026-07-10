@@ -29,17 +29,17 @@ npm run db:dump:data
 
 `src/db/schema.sql` defines these current tables:
 
-- `tags_internal`: internal tag names.
-- `creators`: core creator identity rows.
-- `creator_bios`: extended creator biography fields.
-- `channels`: YouTube channel metadata owned by one creator.
+- `taxonomy_terms`: curated taxonomy terms with `slug`, `label`, `description`, and optional `parent_id`.
+- `profiles`: core cross-source identity rows.
+- `profile_bios`: extended profile biography fields.
+- `channels`: YouTube channel metadata owned by one profile.
 - `videos`: YouTube video metadata owned by one channel.
 - `transcripts`: versioned transcript metadata and raw json3 payloads per video.
 - `transcript_segments`: normalized segment rows for each stored transcript version.
-- `creator_tags_internal`: creator-to-tag join table.
-- `channel_tags_internal`: channel-to-tag join table.
+- `profile_taxonomy_terms`: profile-to-taxonomy join table.
+- `channel_taxonomy_terms`: optional channel-to-taxonomy join table.
 
-`channels.source_tags` and `videos.source_tags` store JSON arrays. `videos.categories` also stores a JSON array.
+`channels.source_metadata_tags` and `videos.source_metadata_tags` store JSON arrays of imported YouTube labels. `videos.categories` also stores a JSON array.
 
 ## Current Transcript Shape
 
@@ -67,12 +67,13 @@ Treat `src/db/schema.sql` as the canonical schema.
 
 Current alignment:
 
-- Channel and video repositories write `source_tags` JSON arrays, matching `channels.source_tags` and `videos.source_tags`.
-- The creator repository creates or reuses stub rows in `creators`; channel profile saves store the resulting `channels.creator_id`.
+- Channel and video repositories write `source_metadata_tags` JSON arrays, matching `channels.source_metadata_tags` and `videos.source_metadata_tags`.
+- The profile repository creates or reuses stub rows in `profiles`; channel metadata saves store the resulting `channels.profile_id`.
 - Transcript persistence uses the existing versioned `transcripts` table plus `transcript_segments`.
-- The production ingest storage adapter uses repository methods for creator-backed channel saves, video saves, transcript version lookup/save, segment saves, and transcript-backfill video selection.
+- The production ingest storage adapter uses repository methods for profile-backed channel saves, video saves, transcript version lookup/save, segment saves, and transcript-backfill video selection.
 - Transcript-backfill video selection returns both the internal video ID and YouTube video ID so orchestration can store transcript rows by database ID while retrieving captions by YouTube identity.
 - Video saves return stored video IDs and YouTube video IDs so orchestration can attach downloaded json3 captions to the correct transcript rows without importing repositories directly.
+- Manual taxonomy remains separate from ingest. Ingest writes imported source metadata tags only; it does not assign taxonomy terms.
 
 Legacy artifacts:
 
