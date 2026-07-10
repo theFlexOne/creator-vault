@@ -1,0 +1,19 @@
+# Replace the subject and summary below. Keep only the optional sections that apply.
+
+<type>(<scope>): <imperative outcome>
+
+<What changed and why. Keep this outcome-focused, not file-by-file.>
+
+# Plan: <path if applicable>
+# Phase: <n>
+# Phases: <n, n, n>
+
+# Includes:
+# - <meaningful outcome or change slice>
+# - <meaningful outcome or change slice>
+
+# Verification:
+# - <focused validation>
+# - <broader validation if applicable>
+
+# Refs #<issue>
