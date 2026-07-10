@@ -44,5 +44,5 @@ Current UI note: the interactive shell is a guided terminal flow, not a pane-bas
 2. `docs/app/cli.md` for command behavior.
 3. `docs/app/ingest-workflows.md` for the current ingest architecture.
 4. `docs/app/database.md` before changing persistence code.
-5. `docs/plans/plan-status.md` to see the active plan and any recently completed historical context.
-6. `docs/plans/Ingest Implementation TODO Inventory.md` before starting ingest follow-up work.
+5. `docs/README.md` for the documentation map and where current-state material lives.
+6. Your issue tracker or external planning system for follow-up work that is not captured as current-state documentation.
