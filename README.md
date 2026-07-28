@@ -1,6 +1,6 @@
-# Creator Vault
+# Profile Vault
 
-Creator Vault is a TypeScript CLI for collecting YouTube channel, video, and transcript data into a local SQLite database organized around profile identities. The app focuses on YouTube channel metadata, channel video metadata, and transcripts.
+Profile Vault is a TypeScript CLI for collecting YouTube channel, video, and transcript data into a local SQLite database organized around profile identities. The app focuses on YouTube channel metadata, channel video metadata, and transcripts.
 
 The CLI binary is named `et`.
 

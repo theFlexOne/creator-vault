@@ -55,7 +55,7 @@ const createDependencies = (): CreateIngestModuleDependencies => ({
         findVideosMissingTranscripts: jest.fn(async () => []),
     },
     tempDirectoryProvider: {
-        getTempDirectory: jest.fn(() => '/tmp/creator-vault'),
+        getTempDirectory: jest.fn(() => '/tmp/profile-vault'),
     },
     reporter: {
         info: jest.fn(),
@@ -218,7 +218,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-1',
                 language: 'en',
                 captionSource: 'manual',
-                filePath: '/tmp/creator-vault/vid-1.manual.en.json3',
+                filePath: '/tmp/profile-vault/vid-1.manual.en.json3',
             },
         ]);
         mockReadFile.mockResolvedValue(rawJson3);
@@ -298,7 +298,7 @@ describe('createIngestModule', () => {
         expect(dependencies.youtubeSource.downloadJson3Captions).toHaveBeenCalledWith([
             { videoId: 'vid-1', language: 'en', preferManual: true },
             { videoId: 'vid-2', language: 'en', preferManual: true },
-        ], '/tmp/creator-vault');
+        ], '/tmp/profile-vault');
         expect(dependencies.storage.saveTranscriptVersion).toHaveBeenCalledWith(expect.objectContaining({
             videoId: 10,
             captionSource: 'manual',
@@ -519,7 +519,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-1',
                 language: 'en',
                 captionSource: 'manual',
-                filePath: '/tmp/creator-vault/vid-1.manual.en.json3',
+                filePath: '/tmp/profile-vault/vid-1.manual.en.json3',
             },
         ]);
         mockReadFile.mockResolvedValue(rawJson3);
@@ -659,7 +659,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-missing',
                 language: 'en',
                 captionSource: 'manual',
-                filePath: '/tmp/creator-vault/vid-missing.manual.en.json3',
+                filePath: '/tmp/profile-vault/vid-missing.manual.en.json3',
             },
         ]);
 
@@ -715,7 +715,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-1',
                 language: 'en',
                 captionSource: 'manual',
-                filePath: '/tmp/creator-vault/vid-1.manual.en.json3',
+                filePath: '/tmp/profile-vault/vid-1.manual.en.json3',
             },
         ]);
         mockReadFile.mockRejectedValue(new Error('read failed'));
@@ -871,7 +871,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-1',
                 language: 'en',
                 captionSource: 'automatic',
-                filePath: '/tmp/creator-vault/vid-1.automatic.en.json3',
+                filePath: '/tmp/profile-vault/vid-1.automatic.en.json3',
             },
         ]);
         mockReadFile.mockResolvedValue(rawJson3);
@@ -933,7 +933,7 @@ describe('createIngestModule', () => {
         expect(dependencies.storage.findVideosMissingTranscripts).toHaveBeenCalledWith(7, 1);
         expect(dependencies.youtubeSource.downloadJson3Captions).toHaveBeenCalledWith([
             { videoId: 'vid-1', language: 'en', preferManual: true },
-        ], '/tmp/creator-vault');
+        ], '/tmp/profile-vault');
         expect(dependencies.youtubeSource.fetchChannelProfile).not.toHaveBeenCalled();
         expect(dependencies.youtubeSource.fetchChannelVideosPage).not.toHaveBeenCalled();
         expect(dependencies.storage.saveTranscriptVersion).toHaveBeenCalledWith(expect.objectContaining({
@@ -966,7 +966,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-1',
                 language: 'en',
                 captionSource: 'automatic',
-                filePath: '/tmp/creator-vault/vid-1.automatic.en.json3',
+                filePath: '/tmp/profile-vault/vid-1.automatic.en.json3',
             },
         ]);
         mockReadFile.mockResolvedValue(rawJson3);
@@ -1052,7 +1052,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-missing',
                 language: 'en',
                 captionSource: 'manual',
-                filePath: '/tmp/creator-vault/vid-missing.manual.en.json3',
+                filePath: '/tmp/profile-vault/vid-missing.manual.en.json3',
             },
         ]);
 
@@ -1093,7 +1093,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-1',
                 language: 'en',
                 captionSource: 'automatic',
-                filePath: '/tmp/creator-vault/vid-1.automatic.en.json3',
+                filePath: '/tmp/profile-vault/vid-1.automatic.en.json3',
             },
         ]);
         mockReadFile.mockResolvedValue(rawJson3);
@@ -1151,7 +1151,7 @@ describe('createIngestModule', () => {
                 videoId: 'vid-1',
                 language: 'en',
                 captionSource: 'automatic',
-                filePath: '/tmp/creator-vault/vid-1.automatic.en.json3',
+                filePath: '/tmp/profile-vault/vid-1.automatic.en.json3',
             },
         ]);
         mockReadFile.mockRejectedValue(error);

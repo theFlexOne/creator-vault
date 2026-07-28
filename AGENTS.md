@@ -1,25 +1,15 @@
-# Creator Vault Agent Guide
+# Profile Vault Agent Guide
 
 This file is the shared source of truth for AI assistants working in this repository. Keep tool-specific wrappers thin or omit them entirely when this file already covers the needed behavior.
 
 ## Operating Mode
 
 - All agents in this repository operate in read-only mode for application source code.
-- Do not modify, rewrite, or edit application source files that change runtime behavior.
 - AI in this project is a complex assistant for analysis, review, debugging, planning, tests, docs, and narrow non-behavioral guidance.
-- It is not used for vibe coding or direct implementation of production behavior.
-- The lead developer owns all real application source changes.
-- Allowed work surfaces for this scaffold: tests, docs, agent-context files, and helpful inline comments when they are explicitly useful.
-- If a task would require changing application source to complete, stop and hand off the needed change instead of making the edit.
-
-### Named Exception: `Plan Implementer`
-
-- The custom agent `Plan Implementer` is excluded from the default application-source edit restriction in this repository.
-- That exception applies only when the active agent name exactly matches `Plan Implementer`.
-- `Plan Implementer` may modify application source, schema, seeds, tests, docs, and agent-context files only when the user explicitly invokes that agent.
-- `Plan Implementer` must stay within the approved plan scope, prefer the smallest coherent edit slices, and validate after each slice.
-- `Plan Implementer` must not be invoked as a subagent by other agents.
-- All other agents remain bound by the default read-only restriction for application source.
+- Do not modify application source, schemas, seeds, or other files that change production behavior unless the user explicitly invokes or authorizes `$edit-code`.
+- Without that authorization, permitted work includes analysis, review, debugging, planning, tests, docs, agent-context files, and helpful inline comments when explicitly useful.
+- If a request needs a production change but `$edit-code` has not been explicitly authorized, provide precise handoff guidance instead of making the edit.
+- `$edit-code` is the sole exception to this default; follow `.agents/skills/edit-code/SKILL.md` whenever it is authorized.
 
 ## Repo Priorities
 
@@ -30,19 +20,33 @@ This file is the shared source of truth for AI assistants working in this reposi
 ## Project Map
 
 - Start with `README.md` for setup, commands, and current workflows.
-- Use `CONTEXT.md` for domain terms.
+- Use `CONTEXT.md` as the canonical domain glossary. **Profile** is the cross-platform identity; use concrete platform terms such as **YouTube Channel**, **Video**, and **Transcript** for source-specific concepts.
 - Use `docs/app/overview.md` for runtime shape and layer boundaries.
 - Use `docs/app/database.md` before reasoning about persistence behavior.
 
-## Working Rules
+## Workflow
 
 - Stay repo-relative in all references and examples.
 - Do not invent missing commands, policies, or architecture details.
 - When details are unclear, point to the gap and leave a clear placeholder.
-- Reuse `.ai/project.md`, `.ai/workflows.md`, `.ai/commands.md`, and `.ai/definition-of-done.md` instead of duplicating their content.
+- For review, focus on concrete bugs, regressions, missing validation, and risky assumptions.
+- For debugging, start with the smallest relevant command or test. Use `npm run start -- test-connection` as a quick environment check when SQLite or YouTube access may be involved.
+- For refactor planning, make CLI, ingest, repository, service, and UI boundaries explicit. Separate safe docs or test work from production changes that require `$edit-code`.
+- For tests, follow existing test layout and add the narrowest coverage that supports the claimed behavior.
+- Prefer existing documentation over duplicate explanations; add concise clarification only when there is a real entry-point gap.
+
+## Commands
+
+- Run the CLI from source: `npm run start -- <command>`.
+- Compile: `npm run compile`; build: `npm run build`; full tests: `npm test`; coverage: `npm run test:coverage`.
+- Focused test suites: `npm run test:commands`, `npm run test:services`, and `npm run test:lib`.
+- Database utilities: `npm run db:seed`, `npm run db:dump:schema`, `npm run db:dump:table -- <table-name>`, and `npm run db:dump:data`.
+- Do not invent lint or format commands: neither is configured as an npm script.
 
 ## Validation Default
 
 - Prefer the narrowest relevant tests for the touched area.
 - Update docs when behavior, commands, or operator guidance changes.
 - If validation cannot run, say what was skipped and what risk remains.
+- Do not claim lint or formatting ran unless the repository adds and runs those commands.
+- Do not require full-suite tests, compilation, or builds unless the task warrants the broader check.

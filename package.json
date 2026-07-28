@@ -1,5 +1,5 @@
 {
-  "name": "creator-vault",
+  "name": "profile-vault",
   "version": "1.0.0",
   "description": "`A TypeScript CLI for collecting YouTube channel, video, and transcript data into SQLite.`",
   "bin": {

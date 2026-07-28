@@ -1,6 +1,6 @@
 # Better-SQLite3 Guide
 
-This is the project-specific SQLite guide for Creator Vault. It replaces the older generic `docs/better-sqlite-guide.md` material with practices that match the current codebase.
+This is the project-specific SQLite guide for Profile Vault. It replaces the older generic `docs/better-sqlite-guide.md` material with practices that match the current codebase.
 
 ## Connection Pattern
 

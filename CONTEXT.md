@@ -1,6 +1,6 @@
-# Creator Vault
+# Profile Vault
 
-Creator Vault tracks profiles and the content surfaces the project monitors across platforms. The domain is profile-centric, with platform-specific terms used for each source rather than one generic cross-platform account model.
+Profile Vault tracks profiles and the content surfaces the project monitors across platforms. The domain is profile-centric, with platform-specific terms used for each source rather than one generic cross-platform account model.
 
 ## Language
 

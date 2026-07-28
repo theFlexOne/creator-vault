@@ -39,7 +39,7 @@ describe('runUiShell', () => {
 
         await runUiShell(output);
 
-        expect(output.log).toHaveBeenCalledWith('Exiting Creator Vault UI.');
+        expect(output.log).toHaveBeenCalledWith('Exiting Profile Vault UI.');
     });
 
     it('routes a selected action into the workflow runner before returning to the menu', async () => {
@@ -51,7 +51,7 @@ describe('runUiShell', () => {
         await runUiShell(output);
 
         expect(mockRunUiAction).toHaveBeenCalledWith('ingest-channel-videos', output);
-        expect(output.log).toHaveBeenCalledWith('Exiting Creator Vault UI.');
+        expect(output.log).toHaveBeenCalledWith('Exiting Profile Vault UI.');
         expect(mockAskSelect).toHaveBeenCalledTimes(2);
     });
 });

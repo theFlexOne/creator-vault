@@ -12,7 +12,7 @@ export async function runUiShell(output: UiShellOutput = console): Promise<void>
         }
 
         if (action === 'exit') {
-            output.log('Exiting Creator Vault UI.');
+            output.log('Exiting Profile Vault UI.');
             return;
         }
 

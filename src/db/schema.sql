@@ -2,15 +2,12 @@ DROP TABLE IF EXISTS channel_taxonomy_terms;
 DROP TABLE IF EXISTS channel_tags_internal;
 DROP TABLE IF EXISTS profile_taxonomy_terms;
 DROP TABLE IF EXISTS profile_tags_internal;
-DROP TABLE IF EXISTS creator_tags_internal;
 DROP TABLE IF EXISTS transcript_segments;
 DROP TABLE IF EXISTS transcripts;
 DROP TABLE IF EXISTS videos;
 DROP TABLE IF EXISTS profile_bios;
-DROP TABLE IF EXISTS creator_bios;
 DROP TABLE IF EXISTS channels;
 DROP TABLE IF EXISTS profiles;
-DROP TABLE IF EXISTS creators;
 DROP TABLE IF EXISTS taxonomy_terms;
 DROP TABLE IF EXISTS tags_internal;
 CREATE TABLE taxonomy_terms (

@@ -1,6 +1,6 @@
 # Database
 
-Creator Vault uses local SQLite through `better-sqlite3`.
+Profile Vault uses local SQLite through `better-sqlite3`.
 
 ## Connection
 
