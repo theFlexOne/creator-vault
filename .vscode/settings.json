@@ -2,16 +2,10 @@
     "sqltools.useNodeRuntime": true,
     "sqltools.connections": [
         {
-            "previewLimit": 200,
-            "driver": "SQLite",
-            "name": "db",
-            "database": "${workspaceFolder}/src/db/db.sqlite"
-        },
-        {
             "previewLimit": 50,
             "driver": "SQLite",
-            "database": "${workspaceFolder}/src/db/db.sqlite.bak",
-            "name": "db bak"
+            "database": "${workspaceFolder:profile-vault}/src/db/db.sqlite",
+            "name": "db"
         }
     ]
 }
